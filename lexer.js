@@ -1,5 +1,5 @@
 import fs from "fs";
-import { TokenTypeInfo, TOKEN_TYPES, Token } from "./token.js"
+import { TokenTypeInfo, TOKEN_TYPES, PAIRED_TOKEN_TYPES, Token } from "./token.js"
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
@@ -12,12 +12,9 @@ function tokenize(string) {
 
 
     while (string.length > 0) {
-        console.log(string.length);
         // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
         // to an array using Object.entries
         for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
-            // console.log(`LOOPING OVER ${[typeName, JSON.stringify(typeInfo)]}`)
-
             // default for now, could change in the code below
             let tokenType = typeInfo;
 
@@ -27,28 +24,28 @@ function tokenize(string) {
             }
             
             let matchedString = matches[0];
-            if (matchedString == TOKEN_TYPES.BOLD_START.symbol) {
-                // STEP 1: first, we have to decide: is this a start or end symbol?
-                // to accomplish this, we loop _backwards_ in the array
-                for (let i = tokens.length - 1; i >= 0; i--) {
-                    if (tokens[i].type == TOKEN_TYPES.BOLD_START) {
-                        // if we're here, then we know that the matched string is an end symbol
-                        tokenType = TOKEN_TYPES.BOLD_END;
+
+            for (let tokenPair of PAIRED_TOKEN_TYPES) {
+                if (matchedString == tokenPair.start.symbol) {
+                    // STEP 1: first, we have to decide: is this a start or end symbol?
+                    // to accomplish this, we loop _backwards_ in the array
+                    for (let i = tokens.length - 1; i >= 0; i--) {
+                        if (tokens[i].type == tokenPair.start) {
+                            // if we're here, then we know that the matched string is an end symbol
+                            tokenType = tokenPair.end;
+                            break;
+                        }
                     }
-                    else if (tokens[i].type == TOKEN_TYPES.BOLD_END) {
-                        // otherwise, we know that the matched string is a start symbol
-                        tokenType = TOKEN_TYPES.BOLD_START;
-                    }
-                }
+                }    
             }
 
             // remove the matched characters
             string = string.slice(matchedString.length);
 
+            let token = new Token(tokenType, matchedString);
+
             // now append this new token into our tokens array
-            tokens.push(
-                new Token(tokenType, matchedString)
-            );
+            tokens.push(token);
 
             // if we've reached this point, we've found a match 
             // and don't need to continue looping anymore
@@ -62,7 +59,7 @@ function tokenize(string) {
 
 function main() {
     let filename = process.argv[2];
-    console.log(JSON.stringify(readFile(filename)));
+    // console.log(JSON.stringify(readFile(filename)));
 
     // test 1
     let string = "# some **bolded** text\r\n";
@@ -102,8 +99,12 @@ function main() {
         new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
     ];
-    console.log(JSON.stringify(tokenize(string), null, 2))
+    console.log(`RESULT: ${JSON.stringify(tokenize(string), null, 2)}`);
+    console.log(`EXPECTED: ${JSON.stringify(expected, null, 2)}`);
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+
+    string = "[here's a link](google.com) and ![here's an image](test)";
+    // console.log(JSON.stringify(tokenize(string), null, 2))
 }
 
 main();
