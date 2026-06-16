@@ -50,6 +50,8 @@ function tokenize(string) {
                 new Token(tokenType, matchedString)
             );
 
+            // if we've reached this point, we've found a match 
+            // and don't need to continue looping anymore
             break;
         }
     }
