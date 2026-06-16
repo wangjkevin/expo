@@ -20,7 +20,8 @@ export const TokenType = Object.freeze({
     IMAGE_ALT_TEXT_MARKER: "IMAGE_ALT_TEXT_MARKER",
     IMAGE_URL_MARKER: "IMAGE_URL_MARKER",
     BLOCK_CODE_START: "BLOCK_CODE_START",
-    BLOCK_CODE_END: "BLOCK_CODE_END"
+    BLOCK_CODE_END: "BLOCK_CODE_END",
+    TEXT: "TEXT"
 })
 
 export class Token {
