@@ -1,4 +1,4 @@
-class TokenTypeInfo {
+export class TokenTypeInfo {
     constructor(symbol, regex) {
         this.symbol = symbol;
         this.regex = regex;

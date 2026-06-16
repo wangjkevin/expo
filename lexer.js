@@ -1,5 +1,5 @@
 import fs from "fs";
-import { TokenName, TokenType, Token, TOKEN_TYPES } from "./token.js"
+import { TokenTypeInfo, TOKEN_TYPES, Token } from "./token.js"
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
@@ -8,9 +8,11 @@ function readFile(filename) {
 function tokenize(string) {
     let tokens = [];
 
-    for (let tokenType of TOKEN_TYPES) {
-        let matchedString = string.match(tokenType.regex);
-        if ()
+    for (let [typeName, typeInfo] of TOKEN_TYPES) {
+        let matchedString = string.match(typeInfo.regex);
+        // if (matchedString == TOKEN_TYPES.BOLD_START.symbol) {
+
+        // }
     }
 
     return tokens;
