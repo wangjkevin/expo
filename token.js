@@ -34,6 +34,13 @@ export const TOKEN_TYPES = Object.freeze({
     TEXT                : new TokenTypeInfo(null    , /^[^#*_>`\[\]()!\r\n]+/),  // everything that's not a special keyword in markdown
 });
 
+export const PAIRED_TOKEN_TYPES = [
+    {start: TOKEN_TYPES.BOLD_START, end: TOKEN_TYPES.BOLD_END},
+    {start: TOKEN_TYPES.ITALIC_START, end: TOKEN_TYPES.ITALIC_END},
+    {start: TOKEN_TYPES.INLINE_CODE_START, end: TOKEN_TYPES.INLINE_CODE_END},
+    {start: TOKEN_TYPES.BLOCK_CODE_START, end: TOKEN_TYPES.BLOCK_CODE_END},
+]
+
 export class Token {
     constructor(type, lexeme) {
         this.type = type;
