@@ -1,13 +1,12 @@
-import { Token, TokenType } from "./token.js"
+import fs from "fs";
+import { TokenName, TokenType, Token, TOKEN_TYPES } from "./token.js"
 
 function readFile(filename) {
-    const fs = require("fs");
-
     return fs.readFileSync(filename, "utf8");
 }
 
-function tokenize(file) {
-    
+function tokenize(string) {
+
 }
 
 function main() {
