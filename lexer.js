@@ -5,52 +5,59 @@ function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
 }
 
+function discernEndTokenType(matchedString, tokens) {
+    for (let tokenPair of PAIRED_TOKEN_TYPES) {
+        if (matchedString == tokenPair.start.symbol) {
+            // first, we have to decide: is this a start or end symbol?
+            // to accomplish this, we loop _backwards_ in the array
+            for (let i = tokens.length - 1; i >= 0; i--) {
+                if (tokens[i].type == tokenPair.start) {
+                    // if we're here, then we know that the matched string is an end symbol
+                    return tokenPair.end;
+                }
+            }
+        }    
+    }
 
+    return null;
+}
+
+function findToken(string, tokens) {
+    // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
+    // to an array using Object.entries
+    for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
+        // default for now, could change in the code below
+        let tokenType = typeInfo;
+
+        let matches = string.match(typeInfo.regex);
+        if (matches == null) continue;
+        
+        let matchedString = matches[0];
+
+        let endTokenType = discernEndTokenType(matchedString, tokens);
+        if (endTokenType != null) tokenType = endTokenType;
+
+        // remove the matched characters
+        let remainingString = string.slice(matchedString.length);
+
+        // if we've reached this point, we've found a match 
+        // and don't need to continue looping anymore
+        return [new Token(tokenType, matchedString), remainingString];
+    }
+}
 
 function tokenize(string) {
     let tokens = [];
 
 
     while (string.length > 0) {
-        // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
-        // to an array using Object.entries
-        for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
-            // default for now, could change in the code below
-            let tokenType = typeInfo;
+        let [token, remainingString] = findToken(string, tokens);
 
-            let matches = string.match(typeInfo.regex);
-            if (matches == null) {
-                continue;
-            }
-            
-            let matchedString = matches[0];
+        // left-trim the string
+        string = remainingString;
 
-            for (let tokenPair of PAIRED_TOKEN_TYPES) {
-                if (matchedString == tokenPair.start.symbol) {
-                    // STEP 1: first, we have to decide: is this a start or end symbol?
-                    // to accomplish this, we loop _backwards_ in the array
-                    for (let i = tokens.length - 1; i >= 0; i--) {
-                        if (tokens[i].type == tokenPair.start) {
-                            // if we're here, then we know that the matched string is an end symbol
-                            tokenType = tokenPair.end;
-                            break;
-                        }
-                    }
-                }    
-            }
-
-            // remove the matched characters
-            string = string.slice(matchedString.length);
-
-            let token = new Token(tokenType, matchedString);
-
-            // now append this new token into our tokens array
-            tokens.push(token);
-
-            // if we've reached this point, we've found a match 
-            // and don't need to continue looping anymore
-            break;
-        }
+        // and add our token to our tokens array
+        tokens.push(token);
     }
 
 
@@ -99,12 +106,31 @@ function main() {
         new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
     ];
-    console.log(`RESULT: ${JSON.stringify(tokenize(string), null, 2)}`);
-    console.log(`EXPECTED: ${JSON.stringify(expected, null, 2)}`);
+    // console.log(`RESULT: ${JSON.stringify(tokenize(string), null, 2)}`);
+    // console.log(`EXPECTED: ${JSON.stringify(expected, null, 2)}`);
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
-    string = "[here's a link](google.com) and ![here's an image](test)";
-    // console.log(JSON.stringify(tokenize(string), null, 2))
+    // test 3
+    string = "[here's a link](google.com) and ![here's an image](test)\n";
+    expected = [
+        new Token(TOKEN_TYPES.LINK_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's a link"),
+        new Token(TOKEN_TYPES.LINK_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.LINK_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "google.com"),
+        new Token(TOKEN_TYPES.LINK_URL_END, ")"),
+        new Token(TOKEN_TYPES.TEXT," and "),
+        new Token(TOKEN_TYPES.IMAGE_MARKER, "!"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's an image"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.IMAGE_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "test"),
+        new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n")
+    ]
+    console.log(JSON.stringify(tokenize(string), null, 2))
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
 
 main();
