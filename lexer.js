@@ -6,7 +6,14 @@ function readFile(filename) {
 }
 
 function tokenize(string) {
+    let tokens = [];
 
+    for (let tokenType of TOKEN_TYPES) {
+        let matchedString = string.match(tokenType.regex);
+        if ()
+    }
+
+    return tokens;
 }
 
 function main() {
