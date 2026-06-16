@@ -6,19 +6,19 @@ export class TokenTypeInfo {
 }
 
 export const TOKEN_TYPES = Object.freeze({
-    HEADING_1_MARKER    : new TokenTypeInfo("#"     , /^#/                   ),
-    HEADING_2_MARKER    : new TokenTypeInfo("##"    , /^##/                  ),
-    HEADING_3_MARKER    : new TokenTypeInfo("###"   , /^###/                 ),
-    HEADING_4_MARKER    : new TokenTypeInfo("####"  , /^####/                ),
-    HEADING_5_MARKER    : new TokenTypeInfo("#####" , /^#####/               ),
-    HEADING_6_MARKER    : new TokenTypeInfo("######", /^######/              ),
+    HEADING_1_MARKER    : new TokenTypeInfo("#"     , /^#(?!#)/              ),  // exactly one hashtag, no hashtags after this one
+    HEADING_2_MARKER    : new TokenTypeInfo("##"    , /^##(?!#)/             ),
+    HEADING_3_MARKER    : new TokenTypeInfo("###"   , /^###(?!#)/            ),
+    HEADING_4_MARKER    : new TokenTypeInfo("####"  , /^####(?!#)/           ),
+    HEADING_5_MARKER    : new TokenTypeInfo("#####" , /^#####(?!#)/          ),
+    HEADING_6_MARKER    : new TokenTypeInfo("######", /^######(?!#)/         ),
     BOLD_START          : new TokenTypeInfo("**"    , /^\*\*/                ),  // need \* instead of * since * is a regex character
     BOLD_END            : new TokenTypeInfo("**"    , /^\*\*/                ),  // same idea here
     ITALIC_START        : new TokenTypeInfo("_"     , /^_/                   ),  // same idea here too
     ITALIC_END          : new TokenTypeInfo("_"     , /^_/                   ),
     BLOCKQUOTE_MARKER   : new TokenTypeInfo(">"     , /^>/                   ),
-    INLINE_CODE_START   : new TokenTypeInfo("`"     , /^`/                   ),
-    INLINE_CODE_END     : new TokenTypeInfo("`"     , /^`/                   ),
+    INLINE_CODE_START   : new TokenTypeInfo("`"     , /^`(?!`)/              ),  // exactly one backtick, no backticks after this one
+    INLINE_CODE_END     : new TokenTypeInfo("`"     , /^`(?!`)/              ),
     LINK_TEXT_START     : new TokenTypeInfo("["     , /^\[/                  ),
     LINK_TEXT_END       : new TokenTypeInfo("]"     , /^\]/                  ),
     LINK_URL_START      : new TokenTypeInfo("("     , /^\(/                  ),

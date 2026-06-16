@@ -76,12 +76,32 @@ function main() {
 
     let result = tokenize(string);
 
-
-    console.log(`RESULT: ${JSON.stringify(result, null, 2)}`);
-    console.log(`EXPECTED: ${JSON.stringify(expected, null, 2)}`)
-
-
     console.log(JSON.stringify(result) == JSON.stringify(expected));
+
+    // test 2
+    string = "### This is some **bolded** and _italicized_ text with some `code` and ```block code```\r\n";
+    expected = [
+        new Token(TOKEN_TYPES.HEADING_3_MARKER, "###"),
+        new Token(TOKEN_TYPES.TEXT, " This is some "),
+        new Token(TOKEN_TYPES.BOLD_START, "**"),
+        new Token(TOKEN_TYPES.TEXT, "bolded"),
+        new Token(TOKEN_TYPES.BOLD_END, "**"),
+        new Token(TOKEN_TYPES.TEXT, " and "),
+        new Token(TOKEN_TYPES.ITALIC_START, "_"),
+        new Token(TOKEN_TYPES.TEXT, "italicized"),
+        new Token(TOKEN_TYPES.ITALIC_END, "_"),
+        new Token(TOKEN_TYPES.TEXT, " text with some "),
+        new Token(TOKEN_TYPES.INLINE_CODE_START, "`"),
+        new Token(TOKEN_TYPES.TEXT, "code"),
+        new Token(TOKEN_TYPES.INLINE_CODE_END, "`"),
+        new Token(TOKEN_TYPES.TEXT, " and "),
+        new Token(TOKEN_TYPES.BLOCK_CODE_START, "```"),
+        new Token(TOKEN_TYPES.TEXT, "block code"),
+        new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+    ];
+    console.log(JSON.stringify(tokenize(string), null, 2))
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
 
 main();
