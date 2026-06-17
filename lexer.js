@@ -92,12 +92,39 @@ function findToken(string, tokens) {
     }
 }
 
+function isStartToken(token) {
+    return PAIRED_TOKEN_TYPES.values().includes(token.type);
+}
+
+function isEndToken(token) {
+    return PAIRED_TOKEN_TYPES.keys().includes(token.type);
+}
+
 function demote(tokens) {
     let stack = [];
 
     for (let token of tokens) {
-        if (PAIRED_TOKEN_TYPES.includes(token.type)) {
+        // is the token a start token?
+        if (isStartToken(token)) {
+            // if so, push it onto the stack!
             stack.push(token);
+        }
+        // is the token an end token?
+        else if (isEndToken(token)) {
+            // if so, continue popping from the stack and demoting 
+            // tokens until we find its true partner: the corresponding start token,
+            // or until the stack is empty :-)
+            while (stack[stack.length - 1].type != token.type) {
+                let tokenToDemote = stack.pop();
+
+                if (tokenToDemote.type != TOKEN_TYPES.TEXT) {
+                    tokenToDemote.type = TOKEN_TYPES.TEXT;
+                }
+            }
+
+            if (stack.length > 0) {
+                stack.pop();
+            }
         }
     }
 
@@ -118,6 +145,8 @@ export function tokenize(string) {
         // and add our token to our tokens array
         tokens.push(token);
     }
+
+    demote(tokens);
 
     return tokens;
 }
