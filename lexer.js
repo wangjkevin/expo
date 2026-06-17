@@ -1,20 +1,20 @@
 import fs from "fs";
-import { TokenTypeInfo, TOKEN_TYPES, PAIRED_TOKEN_TYPES, Token } from "./token.js"
+import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, Token } from "./token.js"
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
 }
 
 function discernEndTokenType(matchedString, tokens) {
-    for (let tokenPair of PAIRED_TOKEN_TYPES) {
+    for (let tokenPair of AMBGIUOUS_TOKEN_TYPES) {
         if (matchedString == tokenPair.start.symbol) {
-            // first, we have to decide: is this a start or end symbol?
-            // to accomplish this, we loop _backwards_ in the array
-            for (let i = tokens.length - 1; i >= 0; i--) {
-                if (tokens[i].type == tokenPair.start) {
-                    // if we're here, then we know that the matched string is an end symbol
-                    return tokenPair.end;
-                }
+            // we have to decide: is this a start or end symbol?
+            let foundTokenType = findMostRecentTokenType(tokens, Object.values(tokenPair));
+            if (foundTokenType == tokenPair.start) {
+                return tokenPair.end;
+            }
+            else if (foundTokenType == tokenPair.end) {
+                return tokenPair.start;
             }
         }    
     }
@@ -23,6 +23,7 @@ function discernEndTokenType(matchedString, tokens) {
 }
 
 function findMostRecentTokenType(tokens, candidates) {
+    // to find the most recent token type, we loop _backwards_ in the array
     for (let i = tokens.length - 1; i >= 0; i--) {
         if (candidates.includes(tokens[i].type)) {
             return tokens[i].type;
@@ -88,6 +89,20 @@ function findToken(string, tokens) {
         // if we've reached this point, we've found a match 
         // and don't need to continue looping anymore
         return [new Token(tokenType, matchedString), remainingString];
+    }
+}
+
+function demote(tokens) {
+    let stack = [];
+
+    for (let token of tokens) {
+        if (PAIRED_TOKEN_TYPES.includes(token.type)) {
+            stack.push(token);
+        }
+    }
+
+    for (let token of stack) {
+        token.type = TOKEN_TYPES.TEXT;
     }
 }
 
@@ -176,6 +191,8 @@ function main() {
     console.log(JSON.stringify(tokenize(string), null, 2))
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
     // console.log(tokenize(string));
+
+    console.log(JSON.stringify(tokenize("# **text** _**code_ "), null, 2))
 }
 
 main();
