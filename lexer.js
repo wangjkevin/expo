@@ -69,6 +69,27 @@ function discernTokenType(matchedString, tokens, inCode, tokenType) {
         tokenType = TOKEN_TYPES.TEXT;
     }
 
+    // if (matchedString == TOKEN_TYPES.LINK_URL_START 
+    //     && tokens[tokens.length - 1]?.type == TOKEN_TYPES.LINK_TEXT_END) {
+    //     tokenType = TOKEN_TYPES.LINK_URL_START;
+    // }
+    // else {
+    //     tokenType = TOKEN_TYPES.TEXT;
+    // }
+
+    if (tokenType == TOKEN_TYPES.LINK_URL_START 
+        && tokens[tokens.length - 1]?.type != TOKEN_TYPES.LINK_TEXT_END
+        && tokens[tokens.length - 1]?.type != TOKEN_TYPES.IMAGE_ALT_TEXT_END
+    ) {
+        tokenType = TOKEN_TYPES.TEXT;
+    }
+
+    if (tokenType == TOKEN_TYPES.LINK_URL_END 
+        && findMostRecentTokenType(tokens, [TOKEN_TYPES.LINK_URL_START, TOKEN_TYPES.IMAGE_URL_START]) == null
+    ) {
+        tokenType = TOKEN_TYPES.TEXT;
+    }
+
     return tokenType;
 }
 
@@ -120,7 +141,7 @@ function isEndToken(token) {
 }
 
 function demoteUntilStartTokenFound(stack, currentEndToken) {
-    while (stack[stack.length - 1].type != PAIRED_TOKEN_TYPES.get(currentEndToken.type)) {
+    while (stack.length > 0 && stack[stack.length - 1].type != PAIRED_TOKEN_TYPES.get(currentEndToken.type)) {
         let tokenToDemote = stack.pop();
 
         if (tokenToDemote.type != TOKEN_TYPES.TEXT) {
@@ -141,6 +162,11 @@ function demote(tokens) {
         // weird edge case: if "!" is alone, convert it to text
         if (token.type == TOKEN_TYPES.IMAGE_MARKER 
             && (i == tokens.length - 1 || tokens[i + 1].type != TOKEN_TYPES.IMAGE_ALT_TEXT_START)) {
+            convertToTextType(token);
+        }
+
+        if (token.type == TOKEN_TYPES.LINK_TEXT_END 
+            && (i == tokens.length - 1 || tokens[i + 1].type != TOKEN_TYPES.LINK_URL_START)) {
             convertToTextType(token);
         }
 
@@ -323,8 +349,8 @@ function main() {
         new Token(TOKEN_TYPES.ITALIC_END, "_"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.BLOCKQUOTE_MARKER, ">"),
-        new Token(TOKEN_TYPES.TEXT, " here's a blockquote"),
+        new Token(TOKEN_TYPES.BLOCKQUOTE_MARKER, "> "),
+        new Token(TOKEN_TYPES.TEXT, "here's a blockquote"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.INLINE_CODE_START, "`"),
@@ -374,6 +400,9 @@ function main() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
+        new Token(TOKEN_TYPES.TEXT, " Backtracking: Solving Connections!"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "You’ve probably heard of it: the notorious Connections puzzle, infamously crafted by puzzle creator Wyna Liu and released daily by the New York Times. In Connections, your goal is to form four groups of four items each, where each group shares something in common. There’s always exactly one solution for each puzzle, and each group is more difficult than the previous. If you haven’t played this game before, try solving today’s puzzle! Chances are it’s not that easy. This experience of frustration will form the backbone of this problem. >:-)"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
@@ -382,7 +411,24 @@ function main() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "(this is a snippet of the CS106B finale practice problems)"),
     ];
-    console.log(tokenize(string));
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+
+    string = readFile("test_files/brackets.md");
+    expected = [
+        new Token(TOKEN_TYPES.TEXT, "[test]"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "[[test]]"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "(test)"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "(test))"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "((test))"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "{test}"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "<test>"),
+    ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
 
