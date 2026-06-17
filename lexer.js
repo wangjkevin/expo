@@ -153,7 +153,6 @@ export function tokenize(string) {
 
 function main() {
     let filename = process.argv[2];
-    // console.log(JSON.stringify(readFile(filename)));
 
     // test 1
     let string = "# some **bolded** text\r\n";
@@ -194,8 +193,6 @@ function main() {
         new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
     ];
-    // console.log(`RESULT: ${JSON.stringify(tokenize(string), null, 2)}`);
-    // console.log(`EXPECTED: ${JSON.stringify(expected, null, 2)}`);
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
     // test 3
@@ -219,7 +216,6 @@ function main() {
     ]
     console.log(JSON.stringify(tokenize(string), null, 2))
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
-    // console.log(tokenize(string));
 
     console.log(JSON.stringify(tokenize("# **text** _**code_ "), null, 2))
 }
