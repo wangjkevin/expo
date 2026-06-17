@@ -22,6 +22,39 @@ function discernEndTokenType(matchedString, tokens) {
     return null;
 }
 
+function findMostRecentTokenType(tokens, candidates) {
+    for (let i = tokens.length - 1; i >= 0; i--) {
+        if (candidates.includes(tokens[i].type)) {
+            return tokens[i].type;
+        }
+    }
+
+    return null;
+}
+
+function discernImageTokenType(matchedString, tokens) {
+    if (tokens.length == 0) return null;
+
+    if (matchedString == TOKEN_TYPES.LINK_TEXT_START.symbol 
+        && tokens[tokens.length - 1].type == TOKEN_TYPES.IMAGE_MARKER) {
+        return TOKEN_TYPES.IMAGE_ALT_TEXT_START;
+    }
+    if (matchedString == TOKEN_TYPES.LINK_TEXT_END.symbol
+        && TOKEN_TYPES.IMAGE_ALT_TEXT_START == findMostRecentTokenType(tokens, [TOKEN_TYPES.IMAGE_ALT_TEXT_START, TOKEN_TYPES.LINK_TEXT_START])) {
+        return TOKEN_TYPES.IMAGE_ALT_TEXT_END;
+    }
+    if (matchedString == TOKEN_TYPES.LINK_URL_START.symbol 
+        && tokens[tokens.length - 1].type == TOKEN_TYPES.IMAGE_ALT_TEXT_END) {
+        return TOKEN_TYPES.IMAGE_URL_START;
+    }
+    if (matchedString == TOKEN_TYPES.LINK_URL_END.symbol
+        && TOKEN_TYPES.IMAGE_URL_START == findMostRecentTokenType(tokens, [TOKEN_TYPES.IMAGE_URL_START, TOKEN_TYPES.LINK_URL_START])) {
+        return TOKEN_TYPES.IMAGE_URL_END;
+    }
+
+    return null;
+}
+
 function findToken(string, tokens) {
     // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
     // to an array using Object.entries
@@ -37,6 +70,9 @@ function findToken(string, tokens) {
         let endTokenType = discernEndTokenType(matchedString, tokens);
         if (endTokenType != null) tokenType = endTokenType;
 
+        let imageTokenType = discernImageTokenType(matchedString, tokens);
+        if (imageTokenType != null) tokenType = imageTokenType;
+
         // remove the matched characters
         let remainingString = string.slice(matchedString.length);
 
@@ -48,7 +84,6 @@ function findToken(string, tokens) {
 
 function tokenize(string) {
     let tokens = [];
-
 
     while (string.length > 0) {
         let [token, remainingString] = findToken(string, tokens);
@@ -81,6 +116,7 @@ function main() {
     ];
 
     let result = tokenize(string);
+    console.log(result);
 
     console.log(JSON.stringify(result) == JSON.stringify(expected));
 
@@ -131,6 +167,7 @@ function main() {
     ]
     console.log(JSON.stringify(tokenize(string), null, 2))
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+    // console.log(tokenize(string));
 }
 
 main();
