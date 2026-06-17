@@ -1,5 +1,5 @@
 import fs from "fs";
-import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, Token } from "./token.js"
+import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js"
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
@@ -56,8 +56,8 @@ function discernImageTokenType(matchedString, tokens) {
     return null;
 }
 
-function discernTokenType(matchedString, tokens) {
-    let tokenType = null;
+function discernTokenType(matchedString, tokens, inCode, tokenType) {
+    // let tokenType = null;
 
     let endTokenType = discernEndTokenType(matchedString, tokens);
     if (endTokenType != null) tokenType = endTokenType;
@@ -65,10 +65,25 @@ function discernTokenType(matchedString, tokens) {
     let imageTokenType = discernImageTokenType(matchedString, tokens);
     if (imageTokenType != null) tokenType = imageTokenType;
 
+    if (inCode && !ALLOWED_TOKEN_TYPES_IN_CODE.includes(tokenType)) {
+        tokenType = TOKEN_TYPES.TEXT;
+    }
+
     return tokenType;
 }
 
-function findToken(string, tokens) {
+function toggleInCodeState(tokenType, inCode) {
+    if (tokenType == TOKEN_TYPES.INLINE_CODE_START || tokenType == TOKEN_TYPES.BLOCK_CODE_START) {
+        inCode = true;
+    }
+    if (tokenType == TOKEN_TYPES.INLINE_CODE_END || tokenType == TOKEN_TYPES.BLOCK_CODE_END) {
+        inCode = false;
+    }
+
+    return inCode;
+}
+
+function findToken(string, tokens, inCode) {
     // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
     // to an array using Object.entries
     for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
@@ -78,17 +93,21 @@ function findToken(string, tokens) {
         let matches = string.match(typeInfo.regex);
         if (matches == null) continue;
         
+        // if we're here, we have a match!
+
         let matchedString = matches[0];
 
-        let discernedTokenType = discernTokenType(matchedString, tokens);
+        let discernedTokenType = discernTokenType(matchedString, tokens, inCode, tokenType);
         if (discernedTokenType != null) tokenType = discernedTokenType;
+
+        inCode = toggleInCodeState(tokenType, inCode);
 
         // remove the matched characters
         let remainingString = string.slice(matchedString.length);
 
         // if we've reached this point, we've found a match 
         // and don't need to continue looping anymore
-        return [new Token(tokenType, matchedString), remainingString];
+        return [new Token(tokenType, matchedString), remainingString, inCode];
     }
 }
 
@@ -145,11 +164,11 @@ function demote(tokens) {
 export function tokenize(string) {
     let tokens = [];
 
+    let inCode = false;
     while (string.length > 0) {
-        let [token, remainingString] = findToken(string, tokens);
+        let token;
 
-        // left-trim the string
-        string = remainingString;
+        [token, string, inCode] = findToken(string, tokens, inCode);
 
         // and add our token to our tokens array
         tokens.push(token);
@@ -218,10 +237,97 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, "test"),
         new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n")
-    ]
+    ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
-    // console.log(JSON.stringify(tokenize("# **text** _**code_ "), null, 2))
+    // test 4: bold start token left open
+    string = "## **text** _**text2_";
+    expected = [
+        new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
+        new Token(TOKEN_TYPES.TEXT, " "),
+        new Token(TOKEN_TYPES.BOLD_START, "**"),
+        new Token(TOKEN_TYPES.TEXT, "text"),
+        new Token(TOKEN_TYPES.BOLD_END, "**"),
+        new Token(TOKEN_TYPES.TEXT, " "),
+        new Token(TOKEN_TYPES.ITALIC_START, "_"),
+        new Token(TOKEN_TYPES.TEXT, "**"),  // DEMOTED!
+        new Token(TOKEN_TYPES.TEXT, "text2"),
+        new Token(TOKEN_TYPES.ITALIC_END, "_"),
+    ];
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+
+    // test 5: test all markdown syntax
+    string = readFile("test_files/everything.md");
+    console.log(string);
+    expected = [
+        new Token(TOKEN_TYPES.HEADING_1_MARKER, "#"),
+        new Token(TOKEN_TYPES.TEXT, " heading 1"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
+        new Token(TOKEN_TYPES.TEXT, " heading 2"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.HEADING_3_MARKER, "###"),
+        new Token(TOKEN_TYPES.TEXT, " heading 3"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.HEADING_4_MARKER, "####"),
+        new Token(TOKEN_TYPES.TEXT, " heading 4"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.HEADING_5_MARKER, "#####"),
+        new Token(TOKEN_TYPES.TEXT, " heading 5"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.HEADING_6_MARKER, "######"),
+        new Token(TOKEN_TYPES.TEXT, " heading 6"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.BOLD_START, "**"),
+        new Token(TOKEN_TYPES.TEXT, "bold"),
+        new Token(TOKEN_TYPES.BOLD_END, "**"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.ITALIC_START, "_"),
+        new Token(TOKEN_TYPES.TEXT, "italicized"),
+        new Token(TOKEN_TYPES.ITALIC_END, "_"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.BLOCKQUOTE_MARKER, ">"),
+        new Token(TOKEN_TYPES.TEXT, " here's a blockquote"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.INLINE_CODE_START, "`"),
+        new Token(TOKEN_TYPES.TEXT, "function tokenize(string) { ... }"),  // !!!
+        new Token(TOKEN_TYPES.INLINE_CODE_END, "`"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.LINK_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's a link"),
+        new Token(TOKEN_TYPES.LINK_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.LINK_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "youtube.com"),
+        new Token(TOKEN_TYPES.LINK_URL_END, ")"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's an image"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.IMAGE_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "https://img.pastemagazine.com/wp-content/avuploads/2022/11/15002949/f164158d408e025d130041f82e3399f6.jpg"),
+        new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.BLOCK_CODE_START, "```"),
+        new Token(TOKEN_TYPES.TEXT, "function tokenize(string) {"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "    ..."),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "}"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.CODE_BLOCK_END, "```"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.TEXT, "and here's some text to end this file"),
+    ];
+    console.log(tokenize(string));
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
 
 main();

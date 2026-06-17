@@ -52,6 +52,24 @@ export const PAIRED_TOKEN_TYPES = new Map([
     [TOKEN_TYPES.BLOCK_CODE_END, TOKEN_TYPES.BLOCK_CODE_START],
 ]);
 
+export const ALLOWED_TOKEN_TYPES_IN_CODE = [
+    // the code ones are rather obvious
+    // ...these are more-so here so that the lexer _doesn't_ break :P
+    TOKEN_TYPES.INLINE_CODE_START,
+    TOKEN_TYPES.INLINE_CODE_END,
+    TOKEN_TYPES.BLOCK_CODE_START,
+    TOKEN_TYPES.BLOCK_CODE_END,
+
+    // just like in Ed, let's allow bolding and italicizing code! :D
+    TOKEN_TYPES.BOLD_START,
+    TOKEN_TYPES.BOLD_END,
+    TOKEN_TYPES.ITALIC_START,
+    TOKEN_TYPES.ITALIC_END,
+
+    // this is so newline characters aren't blocked
+    TOKEN_TYPES.NEWLINE_MARKER,
+]
+
 export class Token {
     constructor(type, lexeme) {
         this.type = type;
