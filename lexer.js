@@ -93,11 +93,25 @@ function findToken(string, tokens) {
 }
 
 function isStartToken(token) {
-    return PAIRED_TOKEN_TYPES.values().includes(token.type);
+    return [...PAIRED_TOKEN_TYPES.values()].includes(token.type);
 }
 
 function isEndToken(token) {
-    return PAIRED_TOKEN_TYPES.keys().includes(token.type);
+    return [...PAIRED_TOKEN_TYPES.keys()].includes(token.type);
+}
+
+function demoteUntilStartTokenFound(stack, currentEndToken) {
+    while (stack[stack.length - 1].type != PAIRED_TOKEN_TYPES.get(currentEndToken.type)) {
+        let tokenToDemote = stack.pop();
+
+        if (tokenToDemote.type != TOKEN_TYPES.TEXT) {
+            convertToTextType(tokenToDemote);
+        }
+    }
+}
+
+function convertToTextType(token) {
+    token.type = TOKEN_TYPES.TEXT;
 }
 
 function demote(tokens) {
@@ -114,14 +128,9 @@ function demote(tokens) {
             // if so, continue popping from the stack and demoting 
             // tokens until we find its true partner: the corresponding start token,
             // or until the stack is empty :-)
-            while (stack[stack.length - 1].type != token.type) {
-                let tokenToDemote = stack.pop();
+            demoteUntilStartTokenFound(stack, token);
 
-                if (tokenToDemote.type != TOKEN_TYPES.TEXT) {
-                    tokenToDemote.type = TOKEN_TYPES.TEXT;
-                }
-            }
-
+            // pop the start token
             if (stack.length > 0) {
                 stack.pop();
             }
@@ -165,11 +174,7 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, " text"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
     ];
-
-    let result = tokenize(string);
-    console.log(result);
-
-    console.log(JSON.stringify(result) == JSON.stringify(expected));
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
     // test 2
     string = "### This is some **bolded** and _italicized_ text with some `code` and ```block code```\r\n";
@@ -214,10 +219,9 @@ function main() {
         new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n")
     ]
-    console.log(JSON.stringify(tokenize(string), null, 2))
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
-    console.log(JSON.stringify(tokenize("# **text** _**code_ "), null, 2))
+    // console.log(JSON.stringify(tokenize("# **text** _**code_ "), null, 2))
 }
 
 main();
