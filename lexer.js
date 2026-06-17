@@ -55,6 +55,18 @@ function discernImageTokenType(matchedString, tokens) {
     return null;
 }
 
+function discernTokenType(matchedString, tokens) {
+    let tokenType = null;
+
+    let endTokenType = discernEndTokenType(matchedString, tokens);
+    if (endTokenType != null) tokenType = endTokenType;
+
+    let imageTokenType = discernImageTokenType(matchedString, tokens);
+    if (imageTokenType != null) tokenType = imageTokenType;
+
+    return tokenType;
+}
+
 function findToken(string, tokens) {
     // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
     // to an array using Object.entries
@@ -67,11 +79,8 @@ function findToken(string, tokens) {
         
         let matchedString = matches[0];
 
-        let endTokenType = discernEndTokenType(matchedString, tokens);
-        if (endTokenType != null) tokenType = endTokenType;
-
-        let imageTokenType = discernImageTokenType(matchedString, tokens);
-        if (imageTokenType != null) tokenType = imageTokenType;
+        let discernedTokenType = discernTokenType(matchedString, tokens);
+        if (discernedTokenType != null) tokenType = discernedTokenType;
 
         // remove the matched characters
         let remainingString = string.slice(matchedString.length);
@@ -94,7 +103,6 @@ function tokenize(string) {
         // and add our token to our tokens array
         tokens.push(token);
     }
-
 
     return tokens;
 }
