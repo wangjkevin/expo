@@ -17,7 +17,7 @@ export const TOKEN_TYPES = Object.freeze({
     BOLD_END            : new TokenTypeInfo("BOLD_END"            , "**"          , /^\*\*/                ),  // same idea here
     ITALIC_START        : new TokenTypeInfo("ITALIC_START"        , "_"           , /^_/                   ),  // same idea here too
     ITALIC_END          : new TokenTypeInfo("ITALIC_END"          , "_"           , /^_/                   ),
-    BLOCKQUOTE_MARKER   : new TokenTypeInfo("BLOCKQUOTE_MARKER"   , ">"           , /^>/                   ),
+    BLOCKQUOTE_MARKER   : new TokenTypeInfo("BLOCKQUOTE_MARKER"   , "> "          , /^> /                   ),
     INLINE_CODE_START   : new TokenTypeInfo("INLINE_CODE_START"   , "`"           , /^`(?!`)/              ),  // exactly one backtick, no backticks after this one
     INLINE_CODE_END     : new TokenTypeInfo("INLINE_CODE_END"     , "`"           , /^`(?!`)/              ),
     LINK_TEXT_START     : new TokenTypeInfo("LINK_TEXT_START"     , "["           , /^\[/                  ),
@@ -32,7 +32,7 @@ export const TOKEN_TYPES = Object.freeze({
     BLOCK_CODE_START    : new TokenTypeInfo("BLOCK_CODE_START"    , "```"         , /^```/                 ),
     BLOCK_CODE_END      : new TokenTypeInfo("BLOCK_CODE_END"      , "```"         , /^```/                 ),
     NEWLINE_MARKER      : new TokenTypeInfo("NEWLINE_MARKER"      , ["\r\n", "\n"], /^\r?\n/               ),
-    TEXT                : new TokenTypeInfo("TEXT"                , null          , /^[^#*_>`\[\]()!\r\n]+/),  // everything that's not a special keyword in markdown
+    TEXT                : new TokenTypeInfo("TEXT"                , null          , /^(?:[^#*_>`\[\]()!\r\n]|>(?!\s))+/),  // everything that's not a special keyword in markdown
 });
 
 export const AMBGIUOUS_TOKEN_TYPES = [
