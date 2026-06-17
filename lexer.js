@@ -136,7 +136,14 @@ function convertToTextType(token) {
 function demote(tokens) {
     let stack = [];
 
-    for (let token of tokens) {
+    for (let i = 0; i < tokens.length; i++) {
+        let token = tokens[i];
+        // weird edge case: if "!" is alone, convert it to text
+        if (token.type == TOKEN_TYPES.IMAGE_MARKER 
+            && (i == tokens.length - 1 || tokens[i + 1].type != TOKEN_TYPES.IMAGE_ALT_TEXT_START)) {
+            convertToTextType(token);
+        }
+
         // is the token a start token?
         if (isStartToken(token)) {
             // if so, push it onto the stack!
@@ -159,6 +166,33 @@ function demote(tokens) {
     for (let token of stack) {
         token.type = TOKEN_TYPES.TEXT;
     }
+
+    return tokens;
+}
+
+function merge(tokens) {
+    // exception handling: there could be a possibility of 
+    // 0 tokens (aka empty markdown file)
+    if (tokens.length == 0) {
+        return [];
+    }
+
+    let mergedTokens = [tokens[0]];
+    tokens = tokens.slice(1);
+
+    while (tokens.length > 0) {
+        let mostRecentlyMergedToken = mergedTokens[mergedTokens.length - 1];
+        let tokenToExamine = tokens[0];
+        if (mostRecentlyMergedToken.type == TOKEN_TYPES.TEXT && tokenToExamine.type == TOKEN_TYPES.TEXT) {
+            mostRecentlyMergedToken.lexeme += tokenToExamine.lexeme;
+        }
+        else {
+            mergedTokens.push(tokenToExamine);
+        }
+        tokens = tokens.slice(1);
+    }
+
+    return mergedTokens;
 }
 
 export function tokenize(string) {
@@ -174,7 +208,8 @@ export function tokenize(string) {
         tokens.push(token);
     }
 
-    demote(tokens);
+    tokens = demote(tokens);
+    tokens = merge(tokens);
 
     return tokens;
 }
@@ -238,6 +273,7 @@ function main() {
         new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n")
     ];
+
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
     // test 4: bold start token left open
@@ -250,15 +286,13 @@ function main() {
         new Token(TOKEN_TYPES.BOLD_END, "**"),
         new Token(TOKEN_TYPES.TEXT, " "),
         new Token(TOKEN_TYPES.ITALIC_START, "_"),
-        new Token(TOKEN_TYPES.TEXT, "**"),  // DEMOTED!
-        new Token(TOKEN_TYPES.TEXT, "text2"),
+        new Token(TOKEN_TYPES.TEXT, "**text2"),  // DEMOTED!
         new Token(TOKEN_TYPES.ITALIC_END, "_"),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
     // test 5: test all markdown syntax
     string = readFile("test_files/everything.md");
-    console.log(string);
     expected = [
         new Token(TOKEN_TYPES.HEADING_1_MARKER, "#"),
         new Token(TOKEN_TYPES.TEXT, " heading 1"),
@@ -306,6 +340,7 @@ function main() {
         new Token(TOKEN_TYPES.LINK_URL_END, ")"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.IMAGE_MARKER, "!"),
         new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_START, "["),
         new Token(TOKEN_TYPES.TEXT, "here's an image"),
         new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_END, "]"),
@@ -315,18 +350,18 @@ function main() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.BLOCK_CODE_START, "```"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "function tokenize(string) {"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "    ..."),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "}"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.CODE_BLOCK_END, "```"),
+        new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "and here's some text to end this file"),
     ];
-    console.log(tokenize(string));
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
 
