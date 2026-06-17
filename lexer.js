@@ -106,7 +106,7 @@ function demote(tokens) {
     }
 }
 
-function tokenize(string) {
+export function tokenize(string) {
     let tokens = [];
 
     while (string.length > 0) {
