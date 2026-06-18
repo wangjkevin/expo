@@ -56,8 +56,7 @@ export class Parser {
         this.gobble();
 
         // now, we should be at the text token for our url. save this url:
-        let url = this.gobble();
-        linkNode.contents = url;
+        linkNode.contents = this.gobble().lexeme;
 
         // finally, we're at the end token for a link url. gobble again, and 
         // this should wrap up our gobbling!
@@ -69,7 +68,7 @@ export class Parser {
     gobbleUpLexemesUntil(stopType) {
         let concatenatedLexeme = "";
 
-        while (this.eye().type != stopType) {
+        while (this.eye().type != stopType && this.eye().type != TOKEN_TYPES.EOF) {
             concatenatedLexeme += this.eye().lexeme;
 
             this.gobble();
@@ -98,9 +97,11 @@ export class Parser {
         // now, we gobble up the ]
         this.gobble();
 
+        // gobble again to go past the (
+        this.gobble();
+
         // now, we should be at the text token for our url. save this url:
-        let url = this.gobble();
-        imageNode.contents = url;
+        imageNode.contents = this.gobble().lexeme;
 
         // finally, we're at the end token for an image url. gobble again, and 
         // this should wrap up our gobbling!
@@ -213,7 +214,7 @@ export class Parser {
         this.gobble();
         node.children = this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
         // gobble up the newline symbol
-        this.gobble();
+        // this.gobble();
         return [node];
     }
 

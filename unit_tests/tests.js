@@ -47,13 +47,13 @@ function runLexerTests() {
     console.log(`\ttest passed: ${JSON.stringify(tokenize(string)) == JSON.stringify(expected)}`);
 
     console.log("test 3: links and images are correctly tokenized")
-    string = "[here's a link](google.com) and ![here's an image](test)\n";
+    string = "[here's a link](serebii.net) and ![here's an image](test)\n";
     expected = [
         new Token(TOKEN_TYPES.LINK_TEXT_START, "["),
         new Token(TOKEN_TYPES.TEXT, "here's a link"),
         new Token(TOKEN_TYPES.LINK_TEXT_END, "]"),
         new Token(TOKEN_TYPES.LINK_URL_START, "("),
-        new Token(TOKEN_TYPES.TEXT, "google.com"),
+        new Token(TOKEN_TYPES.TEXT, "serebii.net"),
         new Token(TOKEN_TYPES.LINK_URL_END, ")"),
         new Token(TOKEN_TYPES.TEXT," and "),
         new Token(TOKEN_TYPES.IMAGE_MARKER, "!"),
@@ -320,9 +320,47 @@ function runParserTests() {
         ]
     );
 
-    console.log(JSON.stringify(parser.parse(), null, 2));
-    console.log(JSON.stringify(expected, null, 2));
+    console.log(`\ttest passed: ${JSON.stringify(parser.parse()) == JSON.stringify(expected)}`);
 
+    console.log("test 5: links are correctly handled");
+    tokens = [
+        new Token(TOKEN_TYPES.LINK_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's a link"),
+        new Token(TOKEN_TYPES.LINK_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.LINK_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "serebii.net"),
+        new Token(TOKEN_TYPES.LINK_URL_END, ")"),
+        new Token(TOKEN_TYPES.EOF, null),
+    ];
+    parser = new Parser(tokens);
+    expected = new AbstractSyntaxTree();
+
+    let linkNode = new ASTNode(NODE_TYPES.LINK, "serebii.net");
+    linkNode.children.push(new ASTNode(NODE_TYPES.TEXT, "here's a link"));
+    expected.root.children.push(linkNode);
+
+    console.log(`\ttest passed: ${JSON.stringify(parser.parse()) == JSON.stringify(expected)}`);
+
+    console.log("test 6: images are correctly handled");
+    tokens = [
+        new Token(TOKEN_TYPES.IMAGE_MARKER, "!"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "here's an image"),
+        new Token(TOKEN_TYPES.IMAGE_ALT_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.IMAGE_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "test"),
+        new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n"),
+        new Token(TOKEN_TYPES.EOF, null),
+    ];
+    parser = new Parser(tokens);
+    expected = new AbstractSyntaxTree();
+
+    let imageNode = new ASTNode(NODE_TYPES.IMAGE, "test");
+    imageNode.children.push(new ASTNode(NODE_TYPES.TEXT, "here's an image"));
+    expected.root.children.push(imageNode);
+    expected.root.children.push(new ASTNode(NODE_TYPES.NEWLINE));
+    
     console.log(`\ttest passed: ${JSON.stringify(parser.parse()) == JSON.stringify(expected)}`);
 }
 
