@@ -399,6 +399,89 @@ function runGeneratorTests() {
 
     console.log(`\ttest passed: ${generate(tree.root) == expected}`);
 
+    console.log("test 3: link works properly");
+
+    tree = new AbstractSyntaxTree();
+
+    let linkNode = new ASTNode(NODE_TYPES.LINK);
+    linkNode.contents = "serebii.net";
+    linkNode.children.push(new ASTNode(NODE_TYPES.TEXT, "display text"));
+
+    tree.root.children.push(linkNode);
+
+    expected = `<div id="generated-code"><a href="serebii.net">display text</a></div>`;
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
+
+    console.log("test 4: image works properly");
+
+    tree = new AbstractSyntaxTree();
+
+    let imageNode = new ASTNode(NODE_TYPES.IMAGE);
+    imageNode.contents = "https://serebii.net/potw-champions/Victreebel.jpg";
+    imageNode.children.push(new ASTNode(NODE_TYPES.TEXT, "alt text"));
+
+    tree.root.children.push(imageNode);
+
+    expected = `<div id="generated-code"><img href="https://serebii.net/potw-champions/Victreebel.jpg">alt text</img></div>`;
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
+
+    console.log("test 5: plaintext is solely rendered as plaintext");
+
+    tree = new AbstractSyntaxTree();
+
+    let textNode1 = new ASTNode(NODE_TYPES.TEXT, "text1 ");
+    tree.root.children.push(textNode1);
+    let textNode2 = new ASTNode(NODE_TYPES.TEXT, "text2");
+    tree.root.children.push(textNode2);
+
+    expected = `<div id="generated-code">text1 text2</div>`;
+    
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
+
+    console.log("test 6: link display text can be bolded, italicized, as well as code");
+
+    tree = new AbstractSyntaxTree();
+
+    boldNode = new ASTNode(NODE_TYPES.BOLD);
+    boldNode.children.push(new ASTNode(NODE_TYPES.TEXT, "bolded"));
+
+    italicNode = new ASTNode(NODE_TYPES.ITALIC);
+    italicNode.children.push(new ASTNode(NODE_TYPES.TEXT, "italicized"));
+
+    inlineCodeNode = new ASTNode(NODE_TYPES.INLINE_CODE);
+    inlineCodeNode.children.push(new ASTNode(NODE_TYPES.TEXT, "code"));
+
+    linkNode = new ASTNode(NODE_TYPES.LINK);
+    linkNode.contents = "serebii.net";
+    linkNode.children.push(...[boldNode, italicNode, inlineCodeNode]);
+
+    tree.root.children.push(linkNode);
+
+    expected = `<div id="generated-code"><a href="serebii.net"><strong>bolded</strong><em>italicized</em><code>code</code></a></div>`
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
+
+    console.log("test 7: newline characters are correctly inserted");
+
+    let newlineNode = new ASTNode(NODE_TYPES.NEWLINE);
+
+    tree = new AbstractSyntaxTree();
+
+    tree.root.children.push(...[
+        new ASTNode(NODE_TYPES.TEXT, "first line"),
+        new ASTNode(NODE_TYPES.NEWLINE),
+        new ASTNode(NODE_TYPES.TEXT, "second line"),
+        new ASTNode(NODE_TYPES.NEWLINE),
+        new ASTNode(NODE_TYPES.NEWLINE),
+        new ASTNode(NODE_TYPES.TEXT, "third line"),
+        new ASTNode(NODE_TYPES.NEWLINE),
+    ]);
+
+    expected = `<div id="generated-code">first line<br>second line<br><br>third line<br></div>`;
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
 }
 
 function main() {
