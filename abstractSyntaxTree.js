@@ -19,12 +19,13 @@ export const NODE_TYPES = Object.freeze({
     TEXT: "TEXT",
 });
 
-class ASTNode {
-    constructor(type, contents) {
+export class ASTNode {
+    constructor(type, contents = null) {
         // what type is this node? ex: is it a heading 1 tag? bold tag? etc.
         this.type = type;
 
-        // what's contained inside this node?
+        // what's contained inside this node, if anything?
+        // primarily used for link {text, urls}, image {text, urls}, bold, italic, and regular text
         this.contents = contents;
 
         // a list of ASTNode children
@@ -32,8 +33,8 @@ class ASTNode {
     }
 }
 
-class AbstractSyntaxTree {
+export class AbstractSyntaxTree {
     constructor() {
-        this.root = new ASTNode(NODE_TYPES.DOCUMENT, null);
+        this.root = new ASTNode(NODE_TYPES.DOCUMENT);
     }
 }
