@@ -12,6 +12,7 @@ import { generate } from "../generator.js";
 
 /////////////////////////////// LEXER TESTS ///////////////////////////////
 
+// runLexerTests takes in no arguments and runs a bunch of tests on the lexer
 function runLexerTests() {
     console.log("RUNNING LEXER TESTS...");
     console.log("test 1: can handle bolded text")
@@ -230,6 +231,7 @@ function runLexerTests() {
 
 ////////////////////////////// PARSER TESTS ///////////////////////////////
 
+// runParserTests takes in no arguments and runs a bunch of tests on the parser
 function runParserTests() {
     console.log("RUNNING PARSER TESTS...");
 
@@ -375,6 +377,7 @@ function runParserTests() {
 
 //////////////////////////// GENERATOR TESTS //////////////////////////////
 
+// runGeneratorTests takes in no arguments and runs a bunch of tests on the generator
 function runGeneratorTests() {
     console.log("RUNNING GENERATOR TESTS...");
 
