@@ -244,8 +244,8 @@ function main() {
     // test 1
     let string = "# some **bolded** text\r\n";
     let expected = [
-        new Token(TOKEN_TYPES.HEADING_1_MARKER, "#"),
-        new Token(TOKEN_TYPES.TEXT, " some "),
+        new Token(TOKEN_TYPES.HEADING_1_MARKER, "# "),
+        new Token(TOKEN_TYPES.TEXT, "some "),
         new Token(TOKEN_TYPES.BOLD_START, "**"),
         new Token(TOKEN_TYPES.TEXT, "bolded"),
         new Token(TOKEN_TYPES.BOLD_END, "**"),
@@ -258,8 +258,8 @@ function main() {
     // test 2
     string = "### This is some **bolded** and _italicized_ text with some `code` and ```block code```\r\n";
     expected = [
-        new Token(TOKEN_TYPES.HEADING_3_MARKER, "###"),
-        new Token(TOKEN_TYPES.TEXT, " This is some "),
+        new Token(TOKEN_TYPES.HEADING_3_MARKER, "### "),
+        new Token(TOKEN_TYPES.TEXT, "This is some "),
         new Token(TOKEN_TYPES.BOLD_START, "**"),
         new Token(TOKEN_TYPES.TEXT, "bolded"),
         new Token(TOKEN_TYPES.BOLD_END, "**"),
@@ -306,8 +306,7 @@ function main() {
     // test 4: bold start token left open
     string = "## **text** _**text2_";
     expected = [
-        new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
-        new Token(TOKEN_TYPES.TEXT, " "),
+        new Token(TOKEN_TYPES.HEADING_2_MARKER, "## "),
         new Token(TOKEN_TYPES.BOLD_START, "**"),
         new Token(TOKEN_TYPES.TEXT, "text"),
         new Token(TOKEN_TYPES.BOLD_END, "**"),
@@ -322,23 +321,23 @@ function main() {
     // test 5: test all markdown syntax
     string = readFile("test_files/everything.md");
     expected = [
-        new Token(TOKEN_TYPES.HEADING_1_MARKER, "#"),
-        new Token(TOKEN_TYPES.TEXT, " heading 1"),
+        new Token(TOKEN_TYPES.HEADING_1_MARKER, "# "),
+        new Token(TOKEN_TYPES.TEXT, "heading 1"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
-        new Token(TOKEN_TYPES.TEXT, " heading 2"),
+        new Token(TOKEN_TYPES.HEADING_2_MARKER, "## "),
+        new Token(TOKEN_TYPES.TEXT, "heading 2"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_3_MARKER, "###"),
-        new Token(TOKEN_TYPES.TEXT, " heading 3"),
+        new Token(TOKEN_TYPES.HEADING_3_MARKER, "### "),
+        new Token(TOKEN_TYPES.TEXT, "heading 3"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_4_MARKER, "####"),
-        new Token(TOKEN_TYPES.TEXT, " heading 4"),
+        new Token(TOKEN_TYPES.HEADING_4_MARKER, "#### "),
+        new Token(TOKEN_TYPES.TEXT, "heading 4"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_5_MARKER, "#####"),
-        new Token(TOKEN_TYPES.TEXT, " heading 5"),
+        new Token(TOKEN_TYPES.HEADING_5_MARKER, "##### "),
+        new Token(TOKEN_TYPES.TEXT, "heading 5"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_6_MARKER, "######"),
-        new Token(TOKEN_TYPES.TEXT, " heading 6"),
+        new Token(TOKEN_TYPES.HEADING_6_MARKER, "###### "),
+        new Token(TOKEN_TYPES.TEXT, "heading 6"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.BOLD_START, "**"),
@@ -395,15 +394,15 @@ function main() {
 
     string = readFile("test_files/tiny_finale.md");
     expected = [
-        new Token(TOKEN_TYPES.HEADING_1_MARKER, "#"),
-        new Token(TOKEN_TYPES.TEXT, " Extra Practice Problems! 🎯"),
+        new Token(TOKEN_TYPES.HEADING_1_MARKER, "# "),
+        new Token(TOKEN_TYPES.TEXT, "Extra Practice Problems! 🎯"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "Hi scholars! As we near the final, I wanted to give you all more opportunities to practice your CS106B skillz! At its heart, computer science can be described as the study of games. Hence, these problems are all game-themed! I hope you enjoy, and I hope you'll try out one of these games--perhaps now, or after the final!"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.HEADING_2_MARKER, "##"),
-        new Token(TOKEN_TYPES.TEXT, " Backtracking: Solving Connections!"),
+        new Token(TOKEN_TYPES.HEADING_2_MARKER, "## "),
+        new Token(TOKEN_TYPES.TEXT, "Backtracking: Solving Connections!"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "You’ve probably heard of it: the notorious Connections puzzle, infamously crafted by puzzle creator Wyna Liu and released daily by the New York Times. In Connections, your goal is to form four groups of four items each, where each group shares something in common. There’s always exactly one solution for each puzzle, and each group is more difficult than the previous. If you haven’t played this game before, try solving today’s puzzle! Chances are it’s not that easy. This experience of frustration will form the backbone of this problem. >:-)"),
