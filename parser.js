@@ -1,3 +1,9 @@
+/* Name: Kevin Wang
+ * File: parser.js
+ * -----------------
+ * Converts an array of Tokens into an AbstractSyntaxTree.
+ */
+
 import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
 import { TOKEN_TYPES, Token } from "./token.js";
 import { tokenize, readFile } from "./lexer.js";

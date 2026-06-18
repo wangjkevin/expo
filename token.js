@@ -17,7 +17,7 @@ export class TokenTypeInfo {
     }
 }
 
-// a "enum" type to make it easier to refer to all the various token types.
+// an ""enum"" type to make it easier to refer to all the various token types.
 // each token type also "maps" to a bundle of inforamtion, represented as a
 // TokenTypeInfo object. Why an object rather than a JavaScript object? well,
 // it's a lot to type the property names. :-)
