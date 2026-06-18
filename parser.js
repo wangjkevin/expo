@@ -1,4 +1,5 @@
-import { AbstractSyntaxTree, ASTNode } from "./abstractSyntaxTree.js";
+import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
+import { TOKEN_TYPES, Token } from "./token.js";
 
 class Parser {
     constructor(tokens) {
@@ -26,17 +27,14 @@ class Parser {
     // and returns the token at currentIndex, as well as 
     // an incremented index
     gobble() {
+        if (this.eye().type == TOKEN_TYPES.EOF) {
+            return;
+        }
+
         // note the _post_-increment!
         // we return the element of tokens at the original currentIndex,
         // and then we also increment currentIndex
         return this.tokens[this.currentIndex++];
-    }
-
-    addHeadingNode(nodeType) {
-        let headingNode = new ASTNode(nodeType);
-        this.gobble();
-        headingNode.children = this.parseInline(TOKEN_TYPES.NEWLINE_MARKER);
-        return headingNode;
     }
 
     craftLinkNode() {
@@ -46,7 +44,7 @@ class Parser {
         this.gobble();
 
         // now we recurse!!!
-        linkNode.children = this.parseInline(TOKEN_TYPES.LINK_TEXT_END);
+        linkNode.children = this.parseInlineUntil(TOKEN_TYPES.LINK_TEXT_END);
 
         // now, we should be at ]
         // let's gobble it up:
@@ -110,7 +108,7 @@ class Parser {
         return imageNode;
     }
 
-    parseInline(stopSign) {
+    parseInlineUntil(stopSign) {
         let allInlineNodes = [];
 
         // continue looping until we hit the stop sign
@@ -134,7 +132,11 @@ class Parser {
                 let boldNode = new ASTNode(NODE_TYPES.BOLD);
 
                 // recursive case!!!
-                boldNode.children = this.parseInline(TOKEN_TYPES.BOLD_END);
+                boldNode.children = this.parseInlineUntil(TOKEN_TYPES.BOLD_END);
+
+                // now we're at the bold end token. gobble it up!
+                this.gobble();
+
                 allInlineNodes.push(boldNode);
             }
             else if (token.type == TOKEN_TYPES.ITALIC_START) {
@@ -143,7 +145,11 @@ class Parser {
 
                 let italicNode = new ASTNode(NODE_TYPES.ITALIC);
 
-                italicNode.children = this.parseInline(TOKEN_TYPES.ITALIC_END);
+                italicNode.children = this.parseInlineUntil(TOKEN_TYPES.ITALIC_END);
+
+                // now we're at the italic end token. gobble it up!
+                this.gobble();
+
                 allInlineNodes.push(italicNode);
             }
             else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
@@ -157,26 +163,33 @@ class Parser {
         return allInlineNodes;
     }
 
+    addNodeOfType(nodeType) {
+        let headingNode = new ASTNode(nodeType);
+        this.gobble();
+        headingNode.children = this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
+        // gobble up the newline symbol
+        this.gobble();
+        return headingNode;
+    }
+
     parseBlock() {
         let token = this.eye();
 
         switch (token.type) {
             case TOKEN_TYPES.HEADING_1_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_1);
+                return this.addNodeOfType(NODE_TYPES.HEADING_1);
             case TOKEN_TYPES.HEADING_2_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_2);
+                return this.addNodeOfType(NODE_TYPES.HEADING_2);
             case TOKEN_TYPES.HEADING_3_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_3);
+                return this.addNodeOfType(NODE_TYPES.HEADING_3);
             case TOKEN_TYPES.HEADING_4_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_4);
+                return this.addNodeOfType(NODE_TYPES.HEADING_4);
             case TOKEN_TYPES.HEADING_5_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_5);
+                return this.addNodeOfType(NODE_TYPES.HEADING_5);
             case TOKEN_TYPES.HEADING_6_MARKER:
-                return this.addHeadingNode(NODE_TYPES.HEADING_6);
-
-            case TOKEN_TYPES.BLOCKQUOTE: {
-                let blockquoteNode = new ASTNode(NODE_TYPES.BLOCKQUOTE);
-            }
+                return this.addNodeOfType(NODE_TYPES.HEADING_6);
+            case TOKEN_TYPES.BLOCKQUOTE: 
+                return this.addNodeOfType(NODE_TYPES.BLOCKQUOTE, TOKEN_TYPES.NEWLINE_MARKER);
         }
     }
 
@@ -194,7 +207,6 @@ class Parser {
 }
 
 function main() {
-
     // test 1
     let tokens = [
         new Token(TOKEN_TYPES.HEADING_1_MARKER, "# "),
@@ -203,6 +215,10 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, "bolded"),
         new Token(TOKEN_TYPES.BOLD_END, "**"),
         new Token(TOKEN_TYPES.TEXT, " text"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
-    let root = new ASTNode(NODE_TYPES.DOCUMENT);
+    let p = new Parser(tokens);
+    console.log(JSON.stringify(p.parse(tokens), null, 2));
 }
+
+main();

@@ -454,4 +454,4 @@ function main() {
     console.log(tokenize("![this is a **bolded** link](youtube.com)"))
 }
 
-main();
+// main();

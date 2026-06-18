@@ -1,4 +1,4 @@
-import { tokenize } from "./token.js"
+import { tokenize } from "./lexer.js"
 
 export const NODE_TYPES = Object.freeze({
     DOCUMENT: "DOCUMENT",
