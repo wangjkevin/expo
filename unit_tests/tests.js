@@ -1,3 +1,9 @@
+/* Name: Kevin Wang
+ * File: tests.js
+ * -----------------
+ * Runs unit tests for the compiler.
+ */
+
 import { Token, TOKEN_TYPES } from "../token.js";
 import { tokenize, readFile } from "../lexer.js";
 import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../abstractSyntaxTree.js";
