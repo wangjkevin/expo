@@ -213,6 +213,11 @@ function merge(tokens) {
     return mergedTokens;
 }
 
+function addEOFToken(tokens) {
+    tokens.push(new Token(TOKEN_TYPES.EOF, null));
+    return tokens;
+}
+
 export function tokenize(string) {
     let tokens = [];
 
@@ -228,6 +233,7 @@ export function tokenize(string) {
 
     tokens = demote(tokens);
     tokens = merge(tokens);
+    tokens = addEOFToken(tokens);
 
     return tokens;
 }
@@ -245,6 +251,7 @@ function main() {
         new Token(TOKEN_TYPES.BOLD_END, "**"),
         new Token(TOKEN_TYPES.TEXT, " text"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
@@ -269,6 +276,7 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, "block code"),
         new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
@@ -289,7 +297,8 @@ function main() {
         new Token(TOKEN_TYPES.IMAGE_URL_START, "("),
         new Token(TOKEN_TYPES.TEXT, "test"),
         new Token(TOKEN_TYPES.IMAGE_URL_END, ")"),
-        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n")
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\n"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
 
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
@@ -306,6 +315,7 @@ function main() {
         new Token(TOKEN_TYPES.ITALIC_START, "_"),
         new Token(TOKEN_TYPES.TEXT, "**text2"),  // DEMOTED!
         new Token(TOKEN_TYPES.ITALIC_END, "_"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
@@ -379,6 +389,7 @@ function main() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "and here's some text to end this file"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
@@ -402,6 +413,7 @@ function main() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "(this is a snippet of the CS106B finale practice problems)"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 
@@ -420,6 +432,7 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, "{test}"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "<test>"),
+        new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
 }
