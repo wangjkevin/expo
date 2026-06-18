@@ -2,7 +2,7 @@ import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js
 import { TOKEN_TYPES, Token } from "./token.js";
 import { tokenize, readFile } from "./lexer.js";
 
-class Parser {
+export class Parser {
     constructor(tokens) {
         // our array of tokens!
         this.tokens = tokens;
@@ -203,10 +203,6 @@ class Parser {
             else if (token.type == TOKEN_TYPES.BLOCKQUOTE_MARKER) {
                 allInlineNodes.push(this.addNodeOfType(NODE_TYPES.BLOCKQUOTE));
             }
-            // else if (token.type == TOKEN_TYPES.NEWLINE_MARKER) {
-            //     this.gobble();
-            //     allInlineNodes.push(new ASTNode(NODE_TYPES.NEWLINE));
-            // }
         }
 
         return allInlineNodes;
@@ -252,8 +248,6 @@ class Parser {
         let tree = new AbstractSyntaxTree();
 
         while (this.eye().type !== TOKEN_TYPES.EOF) {
-            console.log(this.eye());
-            console.log(this.currentIndex);
             tree.root.children.push(...this.parseBlock());
         }
 
@@ -261,22 +255,3 @@ class Parser {
         return tree;
     }
 }
-
-function main() {
-    // test 1
-    let tokens = [
-        new Token(TOKEN_TYPES.HEADING_1_MARKER, "# "),
-        new Token(TOKEN_TYPES.TEXT, "some "),
-        new Token(TOKEN_TYPES.BOLD_START, "**"),
-        new Token(TOKEN_TYPES.TEXT, "bolded"),
-        new Token(TOKEN_TYPES.BOLD_END, "**"),
-        new Token(TOKEN_TYPES.TEXT, " text"),
-        new Token(TOKEN_TYPES.EOF, null),
-    ];
-
-
-    let p = new Parser(tokenize(readFile("test_files/brackets.md")));
-    console.log(JSON.stringify(p.parse(), null, 2));
-}
-
-main();
