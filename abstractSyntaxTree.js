@@ -38,8 +38,4 @@ export class AbstractSyntaxTree {
     constructor() {
         this.root = new ASTNode(NODE_TYPES.DOCUMENT);
     }
-
-    print() {
-        
-    }
 }

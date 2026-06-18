@@ -2,6 +2,7 @@ import { Token, TOKEN_TYPES } from "../token.js";
 import { tokenize, readFile } from "../lexer.js";
 import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../abstractSyntaxTree.js";
 import { Parser } from "../parser.js";
+import { generate } from "../generator.js";
 
 /////////////////////////////// LEXER TESTS ///////////////////////////////
 
@@ -289,6 +290,7 @@ function runParserTests() {
     tokens = [
         new Token(TOKEN_TYPES.TEXT, "first line"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
+        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "second line"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.HEADING_4_MARKER, "#### "),
@@ -311,6 +313,7 @@ function runParserTests() {
     expected.root.children.push(
         ...[
             new ASTNode(NODE_TYPES.TEXT, "first line"),
+            new ASTNode(NODE_TYPES.NEWLINE),
             new ASTNode(NODE_TYPES.NEWLINE),
             new ASTNode(NODE_TYPES.TEXT, "second line"),
             new ASTNode(NODE_TYPES.NEWLINE),
@@ -360,13 +363,41 @@ function runParserTests() {
     imageNode.children.push(new ASTNode(NODE_TYPES.TEXT, "here's an image"));
     expected.root.children.push(imageNode);
     expected.root.children.push(new ASTNode(NODE_TYPES.NEWLINE));
-    
+
     console.log(`\ttest passed: ${JSON.stringify(parser.parse()) == JSON.stringify(expected)}`);
 }
 
 //////////////////////////// GENERATOR TESTS //////////////////////////////
 
 function runGeneratorTests() {
+    console.log("RUNNING GENERATOR TESTS...");
+
+    console.log("test 1: can handle headings");
+    let tree = new AbstractSyntaxTree();
+    tree.root.children.push(...[
+        new ASTNode(NODE_TYPES.HEADING_1),
+        new ASTNode(NODE_TYPES.HEADING_5),
+    ]);
+    let expected = `<div id="generated-code"><h1></h1><h5></h5></div>`;
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
+
+    console.log("test 2: can handle bold and italic nodes with text inside");
+
+    tree = new AbstractSyntaxTree();
+    
+    let inlineCodeNode = new ASTNode(NODE_TYPES.INLINE_CODE);
+    let boldNode = new ASTNode(NODE_TYPES.BOLD);
+    let italicNode = new ASTNode(NODE_TYPES.ITALIC);
+
+    tree.root.children.push(inlineCodeNode);
+    inlineCodeNode.children.push(boldNode);
+    boldNode.children.push(italicNode);
+    italicNode.children.push(new ASTNode(NODE_TYPES.TEXT, "bolded and italicized inline code!"));
+
+    expected = `<div id="generated-code"><code><strong><em>bolded and italicized inline code!</em></strong></code></div>`;
+
+    console.log(`\ttest passed: ${generate(tree.root) == expected}`);
 
 }
 
