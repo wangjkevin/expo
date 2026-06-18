@@ -1,5 +1,5 @@
 import fs from "fs";
-import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js"
+import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js";
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
@@ -68,14 +68,6 @@ function discernTokenType(matchedString, tokens, inCode, tokenType) {
     if (inCode && !ALLOWED_TOKEN_TYPES_IN_CODE.includes(tokenType)) {
         tokenType = TOKEN_TYPES.TEXT;
     }
-
-    // if (matchedString == TOKEN_TYPES.LINK_URL_START 
-    //     && tokens[tokens.length - 1]?.type == TOKEN_TYPES.LINK_TEXT_END) {
-    //     tokenType = TOKEN_TYPES.LINK_URL_START;
-    // }
-    // else {
-    //     tokenType = TOKEN_TYPES.TEXT;
-    // }
 
     if (tokenType == TOKEN_TYPES.LINK_URL_START 
         && tokens[tokens.length - 1]?.type != TOKEN_TYPES.LINK_TEXT_END
