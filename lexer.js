@@ -1,7 +1,7 @@
 import fs from "fs";
 import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js";
 
-function readFile(filename) {
+export function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
 }
 

@@ -1,5 +1,6 @@
 import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
 import { TOKEN_TYPES, Token } from "./token.js";
+import { tokenize, readFile } from "./lexer.js";
 
 class Parser {
     constructor(tokens) {
@@ -152,24 +153,72 @@ class Parser {
 
                 allInlineNodes.push(italicNode);
             }
+            else if (token.type == TOKEN_TYPES.INLINE_CODE_START) {
+                // move our counter to the token after the starting inline code token
+                this.gobble();
+
+                let inlineCodeNode = new ASTNode(NODE_TYPES.INLINE_CODE);
+
+                inlineCodeNode.children = this.parseInlineUntil(TOKEN_TYPES.INLINE_CODE_END);
+
+                this.gobble();
+
+                allInlineNodes.push(inlineCodeNode);
+            }
+            else if (token.type == TOKEN_TYPES.BLOCK_CODE_START) {
+                this.gobble();
+
+                let blockCodeNode = new ASTNode(NODE_TYPES.BLOCK_CODE);
+
+                blockCodeNode.chidlren = this.parseInlineUntil(TOKEN_TYPES.BLOCK_CODE_END);
+
+                this.gobble();
+
+                allInlineNodes.push(blockCodeNode);
+            }
             else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
                 allInlineNodes.push(this.craftLinkNode());
             }
             else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
                 allInlineNodes.push(this.craftImageNode());
             }
+            else if (token.type == TOKEN_TYPES.HEADING_1_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_1));
+            }
+            else if (token.type == TOKEN_TYPES.HEADING_2_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_2));
+            }
+            else if (token.type == TOKEN_TYPES.HEADING_3_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_3));
+            }
+            else if (token.type == TOKEN_TYPES.HEADING_4_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_4));
+            }
+            else if (token.type == TOKEN_TYPES.HEADING_5_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_5));
+            }
+            else if (token.type == TOKEN_TYPES.HEADING_6_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_6));
+            }
+            else if (token.type == TOKEN_TYPES.BLOCKQUOTE_MARKER) {
+                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.BLOCKQUOTE));
+            }
+            // else if (token.type == TOKEN_TYPES.NEWLINE_MARKER) {
+            //     this.gobble();
+            //     allInlineNodes.push(new ASTNode(NODE_TYPES.NEWLINE));
+            // }
         }
 
         return allInlineNodes;
     }
 
     addNodeOfType(nodeType) {
-        let headingNode = new ASTNode(nodeType);
+        let node = new ASTNode(nodeType);
         this.gobble();
-        headingNode.children = this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
+        node.children = this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
         // gobble up the newline symbol
         this.gobble();
-        return headingNode;
+        return [node];
     }
 
     parseBlock() {
@@ -188,8 +237,13 @@ class Parser {
                 return this.addNodeOfType(NODE_TYPES.HEADING_5);
             case TOKEN_TYPES.HEADING_6_MARKER:
                 return this.addNodeOfType(NODE_TYPES.HEADING_6);
-            case TOKEN_TYPES.BLOCKQUOTE: 
-                return this.addNodeOfType(NODE_TYPES.BLOCKQUOTE, TOKEN_TYPES.NEWLINE_MARKER);
+            case TOKEN_TYPES.BLOCKQUOTE_MARKER: 
+                return this.addNodeOfType(NODE_TYPES.BLOCKQUOTE);
+            case TOKEN_TYPES.NEWLINE_MARKER:
+                this.gobble();
+                return [new ASTNode(NODE_TYPES.NEWLINE)];
+            default:
+                return this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
         }
     }
 
@@ -198,7 +252,9 @@ class Parser {
         let tree = new AbstractSyntaxTree();
 
         while (this.eye().type !== TOKEN_TYPES.EOF) {
-            tree.root.children.push(this.parseBlock());
+            console.log(this.eye());
+            console.log(this.currentIndex);
+            tree.root.children.push(...this.parseBlock());
         }
 
         // our completed syntax tree!
@@ -217,8 +273,10 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, " text"),
         new Token(TOKEN_TYPES.EOF, null),
     ];
-    let p = new Parser(tokens);
-    console.log(JSON.stringify(p.parse(tokens), null, 2));
+
+
+    let p = new Parser(tokenize(readFile("test_files/brackets.md")));
+    console.log(JSON.stringify(p.parse(), null, 2));
 }
 
 main();
