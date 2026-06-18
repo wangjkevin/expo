@@ -435,6 +435,24 @@ function main() {
         new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+
+    string = "[this is a **bolded** link](youtube.com)";
+    expected = [
+        new Token(TOKEN_TYPES.LINK_TEXT_START, "["),
+        new Token(TOKEN_TYPES.TEXT, "this is a "),
+        new Token(TOKEN_TYPES.BOLD_START, "**"),
+        new Token(TOKEN_TYPES.TEXT, "bolded"),
+        new Token(TOKEN_TYPES.BOLD_END, "**"),
+        new Token(TOKEN_TYPES.TEXT, " link"),
+        new Token(TOKEN_TYPES.LINK_TEXT_END, "]"),
+        new Token(TOKEN_TYPES.LINK_URL_START, "("),
+        new Token(TOKEN_TYPES.TEXT, "youtube.com"),
+        new Token(TOKEN_TYPES.LINK_URL_END, ")"),
+        new Token(TOKEN_TYPES.EOF, null),
+    ];
+    console.log(JSON.stringify(tokenize(string)) == JSON.stringify(expected));
+;
+    console.log(tokenize("![this is a **bolded** link](youtube.com)"))
 }
 
 main();

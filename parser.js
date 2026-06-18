@@ -35,12 +35,130 @@ class Parser {
     addHeadingNode(nodeType) {
         let headingNode = new ASTNode(nodeType);
         this.gobble();
-        headingNode.children = parseInline(TOKEN_TYPES.NEWLINE_MARKER);
+        headingNode.children = this.parseInline(TOKEN_TYPES.NEWLINE_MARKER);
         return headingNode;
     }
 
+    craftLinkNode() {
+        let linkNode = new ASTNode(NODE_TYPES.LINK);
+
+        // gobble up the [
+        this.gobble();
+
+        // now we recurse!!!
+        linkNode.children = this.parseInline(TOKEN_TYPES.LINK_TEXT_END);
+
+        // now, we should be at ]
+        // let's gobble it up:
+        this.gobble();
+
+        // now, we should be at the beginning of the (
+        // gobble again:
+        this.gobble();
+
+        // now, we should be at the text token for our url. save this url:
+        let url = this.gobble();
+        linkNode.contents = url;
+
+        // finally, we're at the end token for a link url. gobble again, and 
+        // this should wrap up our gobbling!
+        this.gobble();
+        
+        return linkNode;
+    }
+
+    gobbleUpLexemesUntil(stopType) {
+        let concatenatedLexeme = "";
+
+        while (this.eye().type != stopType) {
+            concatenatedLexeme += this.eye().lexeme;
+
+            this.gobble();
+        }
+
+        return concatenatedLexeme;
+    }
+
+    craftImageNode() {
+        let imageNode = new ASTNode(NODE_TYPES.IMAGE);
+
+        // gobble up the image marker: !
+        this.gobble();
+
+        // gobble up the [
+        this.gobble();
+
+        // images are tricky since the alt text might have nested symbols.
+        // to remedy this, let's gobble up the text until we find the end of the
+        // alt text, ]
+        imageNode.children = [new ASTNode(
+            NODE_TYPES.TEXT, 
+            this.gobbleUpLexemesUntil(TOKEN_TYPES.IMAGE_ALT_TEXT_END))
+        ];
+
+        // now, we gobble up the ]
+        this.gobble();
+
+        // now, we should be at the text token for our url. save this url:
+        let url = this.gobble();
+        imageNode.contents = url;
+
+        // finally, we're at the end token for an image url. gobble again, and 
+        // this should wrap up our gobbling!
+        this.gobble();
+        
+        return imageNode;
+    }
+
+    parseInline(stopSign) {
+        let allInlineNodes = [];
+
+        // continue looping until we hit the stop sign
+        while (this.eye().type != stopSign && this.eye().type != TOKEN_TYPES.EOF) {
+            let token = this.eye();
+
+            if (token.type == TOKEN_TYPES.TEXT) {
+                // increment our counter by 1
+                this.gobble();
+
+                // text is simplest case: we just push it into our inline nodes array
+                let textNode = new ASTNode(NODE_TYPES.TEXT, token.lexeme);
+                allInlineNodes.push(textNode);
+            }
+            else if (token.type == TOKEN_TYPES.BOLD_START) {
+                // move our counter to the token after the starting bold token
+                this.gobble();
+
+                // if we encounter a starting bold token, we have to parse inline
+                // again until we encounter a ending bold token
+                let boldNode = new ASTNode(NODE_TYPES.BOLD);
+
+                // recursive case!!!
+                boldNode.children = this.parseInline(TOKEN_TYPES.BOLD_END);
+                allInlineNodes.push(boldNode);
+            }
+            else if (token.type == TOKEN_TYPES.ITALIC_START) {
+                // move our counter to the token after the starting italic token
+                this.gobble();
+
+                let italicNode = new ASTNode(NODE_TYPES.ITALIC);
+
+                italicNode.children = this.parseInline(TOKEN_TYPES.ITALIC_END);
+                allInlineNodes.push(italicNode);
+            }
+            else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
+                allInlineNodes.push(this.craftLinkNode());
+            }
+            else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
+                allInlineNodes.push(this.craftImageNode());
+            }
+        }
+
+        return allInlineNodes;
+    }
+
     parseBlock() {
-        let token = eye();
+        let token = this.eye();
 
         switch (token.type) {
             case TOKEN_TYPES.HEADING_1_MARKER:
@@ -57,21 +175,21 @@ class Parser {
                 return this.addHeadingNode(NODE_TYPES.HEADING_6);
 
             case TOKEN_TYPES.BLOCKQUOTE: {
-
+                let blockquoteNode = new ASTNode(NODE_TYPES.BLOCKQUOTE);
             }
         }
     }
 
     parse() {        
         // the root of our tree! this will be what we return...
-        let root = new ASTNode(NODE_TYPES.DOCUMENT);
+        let tree = new AbstractSyntaxTree();
 
         while (this.eye().type !== TOKEN_TYPES.EOF) {
-            root.children.push(this.parseBlock());
+            tree.root.children.push(this.parseBlock());
         }
 
         // our completed syntax tree!
-        return root;
+        return tree;
     }
 }
 
@@ -87,5 +205,4 @@ function main() {
         new Token(TOKEN_TYPES.TEXT, " text"),
     ];
     let root = new ASTNode(NODE_TYPES.DOCUMENT);
-    let heading = new ASTNode(NODE_TYPES.)
 }

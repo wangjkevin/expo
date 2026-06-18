@@ -26,6 +26,7 @@ export class ASTNode {
 
         // what's contained inside this node, if anything?
         // primarily used for link {text, urls}, image {text, urls}, bold, italic, and regular text
+        // if the type is a link or an image, the contents will be the url.
         this.contents = contents;
 
         // a list of ASTNode children
@@ -36,5 +37,9 @@ export class ASTNode {
 export class AbstractSyntaxTree {
     constructor() {
         this.root = new ASTNode(NODE_TYPES.DOCUMENT);
+    }
+
+    print() {
+        
     }
 }
