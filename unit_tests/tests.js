@@ -522,6 +522,13 @@ function runEndToEndTests() {
     result = render(string);
     expected = readFile("unit_tests/test_files/code.html");
     console.log(`\ttest passed: ${result == expected}`);
+
+    console.log("test 5: can handle nested tokens");
+
+    string = readFile("unit_tests/test_files/nested.md");
+    result = render(string);
+    expected = readFile("unit_tests/test_files/nested.html");
+    console.log(`\ttest passed: ${result == expected}`);
 }
 
 function main() {
