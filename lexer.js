@@ -346,6 +346,12 @@ function addEOFToken(tokens) {
     return tokens;
 }
 
+// extinguishNewlineTokens takes in one argument, tokens (array of Tokens), and
+// returns a new array of Tokens with newline characters immediately after
+// a starting block code token or immediately before an ending block code 
+// token. this is to allow for nicer formatting in HTML. if these newline
+// tokens were to be converted to HTML, there would be gaps at the start
+// and end of code blocks
 function extinguishNewlineTokens(tokens) {
     if (tokens.length == 0) {
         return [];
