@@ -5,10 +5,11 @@
  */
 
 import { Token, TOKEN_TYPES } from "../token.js";
-import { tokenize, readFile } from "../lexer.js";
+import { tokenize } from "../lexer.js";
 import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../abstractSyntaxTree.js";
 import { Parser } from "../parser.js";
 import { generate } from "../generator.js";
+import { readFile, render } from "../renderer.js";
 
 /////////////////////////////// LEXER TESTS ///////////////////////////////
 
@@ -493,10 +494,20 @@ function runGeneratorTests() {
     console.log(`\ttest passed: ${generate(tree.root) == expected}`);
 }
 
+// runEndToEndTests takes in no arguments and runs the whole
+// compilation process from beginning to end
+function runEndToEndTests() {
+    console.log("RUNNING END-TO-END TESTS...");
+
+    console.log("test 1: ")
+    let markdownString = "# ";
+}
+
 function main() {
     runLexerTests();
     runParserTests();
     runGeneratorTests();
+    runEndToEndTests();
 }
 
 main();

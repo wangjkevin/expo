@@ -7,12 +7,6 @@
 import fs from "fs";
 import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js";
 
-// readFile takes in one argument, filename (string), and returns
-// the contents of the file as a string
-export function readFile(filename) {
-    return fs.readFileSync(filename, "utf8");
-}
-
 // discernEndTokenType takes in two arguments:
 //     - matchedString (string)
 //     - tokens (an array of Tokens)
