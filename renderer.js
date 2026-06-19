@@ -27,7 +27,7 @@ export function render(markdownString) {
     let tree = parser.parse(tokens);
 
     // STEP 3: turn this intermediate represntation into HTML!!
-    let htmlString = generate(tree);
+    let htmlString = generate(tree.root);
 
     // the fruits of our labor...
     return htmlString;
