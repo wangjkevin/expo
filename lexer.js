@@ -90,14 +90,15 @@ function discernImageTokenType(matchedString, tokens) {
     return null;
 }
 
-// discernTextTokenType takes in three arguments:
+// discernTextTokenType takes in four arguments:
 //     - inCode (bool)
+//     - inURL (bool)
 //     - tokens (an array of Tokens)
 //     - tokenType (TokenTypeInfo)
 // and returns the text token type if the tokenType we're currently on
 // should be converted into a text token, or null otherwise.
-function discernTextTokenType(inCode, tokens, tokenType) {
-    // we convert the token type to text with the three following rules:
+function discernTextTokenType(inCode, inURL, tokens, tokenType) {
+    // we convert the token type to text with the four following rules:
     //   (1) we're inside code (whether inline or block), and the token type
     //       is not one of the allowed token types inside code
     if (inCode && !ALLOWED_TOKEN_TYPES_IN_CODE.includes(tokenType)) {
@@ -121,27 +122,33 @@ function discernTextTokenType(inCode, tokens, tokenType) {
         return TOKEN_TYPES.TEXT;
     }
 
+    //   (4) if we're inside a URL, we should always convert the token to a text token
+    if (inURL && tokenType != TOKEN_TYPES.LINK_URL_END && tokenTYpe != TOKEN_TYPES.IMAGE_URL_END) {
+        return TOKEN_TYPES.TEXT;
+    }
+
     // otherwise, we return null since there's nothing to convert
     return null;
 }
 
-// discernTokenType takes in four arguments:
+// discernTokenType takes in five arguments:
 //     - matchedString (string)
 //     - tokens (an array of Tokens)
 //     - inCode (bool)
+//     - inURL (bool)
 //     - tokenType (TokenTypeInfo)
 // and discerns the token type for strings that may need some extra care.
 // this is because some token types should be converted into other token types.
 // think of this is a wrapper function: take a look at the function headers for the
 // helper functions called inside this function for more info! :)
-function discernTokenType(matchedString, tokens, inCode, tokenType) {
+function discernTokenType(matchedString, tokens, inCode, inURL, tokenType) {
     let endTokenType = discernEndTokenType(matchedString, tokens);
     if (endTokenType != null) tokenType = endTokenType;
 
     let imageTokenType = discernImageTokenType(matchedString, tokens);
     if (imageTokenType != null) tokenType = imageTokenType;
 
-    let textTokenType = discernTextTokenType(inCode, tokens, tokenType);
+    let textTokenType = discernTextTokenType(inCode, inURL, tokens, tokenType);
     if (textTokenType != null) tokenType = textTokenType;
 
     return tokenType;
@@ -165,15 +172,34 @@ function toggleInCodeState(tokenType, inCode) {
     return inCode;
 }
 
-// findToken takes in three arguments:
+// toggleInURLState takes in two arguments:
+//     - tokenType (TokenTypeInfo)
+//     - inURL (bool)
+// and returns an updated value of inURL. inURL should be updated to true
+// if we're inside a URL, and inURL should be updated
+// to false if we're at the end of a URL token. otherwise, 
+// it should remain the same value as it was before
+function toggleInURLState(tokenType, inURL) {
+    if (tokenType == TOKEN_TYPES.LINK_URL_START || tokenType == TOKEN_TYPES.IMAGE_URL_START) {
+        inURL = true;
+    }
+    if (tokenType == TOKEN_TYPES.LINK_URL_END || tokenType == TOKEN_TYPES.IMAGE_URL_END) {
+        inURL = false;
+    }
+
+    return inURL;
+}
+
+// findToken takes in four arguments:
 //     - string (string)
 //     - tokens (an array of Tokens)
 //     - inCode (bool)
+//     - inURL (bool)
 // and finds a token at the beginning of the string (depending on what
 // token type regex matches), then adds this token to tokens! 
 // note: we need the argument inCode in order to discern the correct token type,
 // as some tokens need some extra parsing before appending it to tokens
-function findToken(string, tokens, inCode) {
+function findToken(string, tokens, inCode, inURL) {
     // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
     // to an array using Object.entries
     for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
@@ -187,10 +213,11 @@ function findToken(string, tokens, inCode) {
 
         let matchedString = matches[0];
 
-        let discernedTokenType = discernTokenType(matchedString, tokens, inCode, tokenType);
+        let discernedTokenType = discernTokenType(matchedString, tokens, inCode, inURL, tokenType);
         if (discernedTokenType != null) tokenType = discernedTokenType;
 
         inCode = toggleInCodeState(tokenType, inCode);
+        inURL = toggleInURLState(tokenType, inURL);
 
         // remove the matched characters
         let remainingString = string.slice(matchedString.length);
@@ -387,19 +414,25 @@ export function tokenize(string) {
     let tokens = [];
 
     let inCode = false;
+    let inURL = false;
     while (string.length > 0) {
         let token;
 
-        [token, string, inCode] = findToken(string, tokens, inCode);
+        [token, string, inCode, inURL] = findToken(string, tokens, inCode, inURL);
 
         // and add our token to our tokens array
         if (token != null) tokens.push(token);
     }
 
+    // console.log(`TOKENS BEFORE DEMOTION: ${JSON.stringify(tokens, null, 2)}`);
+
     tokens = demote(tokens);
     tokens = merge(tokens);
     tokens = addEOFToken(tokens);
     tokens = extinguishNewlineTokens(tokens);
+
+    console.log(JSON.stringify(tokens, null, 2));
+
 
     return tokens;
 }

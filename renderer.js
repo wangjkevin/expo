@@ -32,3 +32,10 @@ export function render(markdownString) {
     // the fruits of our labor...
     return htmlString;
 }
+
+let string = readFile("unit_tests/test_files/finale.md");
+tokenize(string).slice(350);
+// string = "![mcc](https://stanford.edu/~kevjwang/cs106b/finale/images/image2.png)\n_Minecraft Championship's logo overlaid on top of the of the Decision Dome._";
+// console.log(tokenize(string).slice(350));
+// let result = render(string);
+// console.log(result);
