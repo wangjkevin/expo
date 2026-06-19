@@ -31,7 +31,7 @@ function runLexerTests() {
     console.log(`\ttest passed: ${JSON.stringify(tokenize(string)) == JSON.stringify(expected)}`);
 
     console.log("test 2: can handle all strings that have a start and end marker")
-    string = "### This is some **bolded** and _italicized_ text with some `code` and ```block code```\r\n";
+    string = "### This is some **bolded** and _italicized_ text with some `code` and ```\nblock code\n```\r\n";
     expected = [
         new Token(TOKEN_TYPES.HEADING_3_MARKER, "### "),
         new Token(TOKEN_TYPES.TEXT, "This is some "),
@@ -152,13 +152,11 @@ function runLexerTests() {
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.BLOCK_CODE_START, "```"),
-        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "function tokenize(string) {"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "    ..."),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "}"),
-        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.BLOCK_CODE_END, "```"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
@@ -502,10 +500,17 @@ function runEndToEndTests() {
     console.log("test 1: bold and italic tokens that are left open are correctly rendered");
 
     let string = readFile("unit_tests/test_files/awkward.md");
-    console.log(tokenize(string));
     let result = render(string);
     let expected = readFile("unit_tests/test_files/awkward.html")
     console.log(`\ttest passed: ${result == expected}`);
+
+    console.log("test 2: test basic functionality");
+    
+    string = readFile("unit_tests/test_files/basic.md");
+    result = render(string);
+    expected = readFile("unit_tests/test_files/basic.html")
+    console.log(`\ttest passed: ${result == expected}`);
+
 }
 
 function main() {

@@ -292,7 +292,7 @@ function demote(tokens) {
                 // if we're here, then no start token was found
                 convertToTextType(token);
             }
-            
+
             // otherwise, pop the start token
             if (stack.length > 0) {
                 stack.pop();
@@ -346,6 +346,31 @@ function addEOFToken(tokens) {
     return tokens;
 }
 
+function extinguishNewlineTokens(tokens) {
+    if (tokens.length == 0) {
+        return [];
+    }
+
+    let newTokens = [tokens[0]];
+    tokens = tokens.slice(1);
+
+    while (tokens.length > 0) {
+        let tokenToExamine = tokens[0];
+
+        let tokenBefore = newTokens[newTokens.length - 1];
+
+        if (!(tokenToExamine.type == TOKEN_TYPES.NEWLINE_MARKER && (
+            tokenBefore.type == TOKEN_TYPES.BLOCK_CODE_START || tokens[1].type == TOKEN_TYPES.BLOCK_CODE_END
+        ))) {
+            newTokens.push(tokenToExamine);
+        }
+
+        tokens = tokens.slice(1);
+    }
+
+    return newTokens;
+}
+
 // the main event! tokenize takes in one argument, string (string), and returns
 // a tokenized version of the string. after we loop through every token and append
 // each token to our tokens array, we still have to do some cleaning. we have to make
@@ -362,12 +387,13 @@ export function tokenize(string) {
         [token, string, inCode] = findToken(string, tokens, inCode);
 
         // and add our token to our tokens array
-        tokens.push(token);
+        if (token != null) tokens.push(token);
     }
 
     tokens = demote(tokens);
     tokens = merge(tokens);
     tokens = addEOFToken(tokens);
+    tokens = extinguishNewlineTokens(tokens);
 
     return tokens;
 }
