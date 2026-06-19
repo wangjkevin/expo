@@ -261,8 +261,6 @@ export class Parser {
         let tree = new AbstractSyntaxTree();
 
         while (this.eye().type !== TOKEN_TYPES.EOF) {
-            console.log(this.eye());
-            console.log(this.currentIndex);
             if (this.eye().type == TOKEN_TYPES.NEWLINE_MARKER) {
                 this.gobble();
                 tree.root.children.push(new ASTNode(NODE_TYPES.NEWLINE));

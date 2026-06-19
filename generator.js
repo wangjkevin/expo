@@ -22,7 +22,7 @@ const HTML_TAGS = new Map([
     [NODE_TYPES.BLOCKQUOTE, { start: "<blockquote>", end: "</blockquote>" }],
     [NODE_TYPES.INLINE_CODE, { start: "<code>", end: "</code>" }],
     [NODE_TYPES.LINK, { start: `<a href="">`, end: "</a>" }],
-    [NODE_TYPES.IMAGE, { start: `<img href="">`, end: "</img>" }],
+    [NODE_TYPES.IMAGE, { start: `<img src="">`, end: "</img>" }],
     [NODE_TYPES.BLOCK_CODE, { start: "<pre><code>", end: "</code></pre>" }],
     [NODE_TYPES.NEWLINE, { start: "<br>", end: ""}],
     [NODE_TYPES.TEXT, { start: "", end: "" }],

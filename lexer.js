@@ -424,15 +424,10 @@ export function tokenize(string) {
         if (token != null) tokens.push(token);
     }
 
-    // console.log(`TOKENS BEFORE DEMOTION: ${JSON.stringify(tokens, null, 2)}`);
-
     tokens = demote(tokens);
     tokens = merge(tokens);
     tokens = addEOFToken(tokens);
     tokens = extinguishNewlineTokens(tokens);
-
-    console.log(JSON.stringify(tokens, null, 2));
-
 
     return tokens;
 }
