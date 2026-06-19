@@ -7,6 +7,23 @@
 import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
 import { TOKEN_TYPES, Token } from "./token.js";
 
+const PAIRED_TOKENS = new Map([
+    [TOKEN_TYPES.BOLD_START, { nodeType: NODE_TYPES.BOLD, end: TOKEN_TYPES.BOLD_END }],
+    [TOKEN_TYPES.ITALIC_START, { nodeType: NODE_TYPES.ITALIC, end: TOKEN_TYPES.ITALIC_END }],
+    [TOKEN_TYPES.INLINE_CODE_START, { nodeType: NODE_TYPES.INLINE_CODE, end: TOKEN_TYPES.INLINE_CODE_END }],
+    [TOKEN_TYPES.BLOCK_CODE_START, { nodeType: NODE_TYPES.BLOCK_CODE, end: TOKEN_TYPES.BLOCK_CODE_END }],
+]);
+
+const SOLITARY_MARKER_TOKENS = new Map([
+    [TOKEN_TYPES.HEADING_1_MARKER, NODE_TYPES.HEADING_1],
+    [TOKEN_TYPES.HEADING_2_MARKER, NODE_TYPES.HEADING_2],
+    [TOKEN_TYPES.HEADING_3_MARKER, NODE_TYPES.HEADING_3],
+    [TOKEN_TYPES.HEADING_4_MARKER, NODE_TYPES.HEADING_4],
+    [TOKEN_TYPES.HEADING_5_MARKER, NODE_TYPES.HEADING_5],
+    [TOKEN_TYPES.HEADING_6_MARKER, NODE_TYPES.HEADING_6],
+    [TOKEN_TYPES.BLOCKQUOTE_MARKER, NODE_TYPES.BLOCKQUOTE],
+]);
+
 // this Parser class provides functionality to parse
 // an array of tokens and create an abstract syntax tree (AST)
 // from this array. unlike the lexer (or generator), we put
@@ -151,29 +168,12 @@ export class Parser {
         return node;
     }
 
-    static pairedTokens = new Map([
-        [TOKEN_TYPES.BOLD_START, { nodeType: NODE_TYPES.BOLD, end: TOKEN_TYPES.BOLD_END }],
-        [TOKEN_TYPES.ITALIC_START, { nodeType: NODE_TYPES.ITALIC, end: TOKEN_TYPES.ITALIC_END }],
-        [TOKEN_TYPES.INLINE_CODE_START, { nodeType: NODE_TYPES.INLINE_CODE, end: TOKEN_TYPES.INLINE_CODE_END }],
-        [TOKEN_TYPES.BLOCK_CODE_START, { nodeType: NODE_TYPES.BLOCK_CODE, end: TOKEN_TYPES.BLOCK_CODE_END }],
-    ]);
-
-    static solitaryMarkerTokens = new Map([
-        [TOKEN_TYPES.HEADING_1_MARKER, NODE_TYPES.HEADING_1],
-        [TOKEN_TYPES.HEADING_2_MARKER, NODE_TYPES.HEADING_2],
-        [TOKEN_TYPES.HEADING_3_MARKER, NODE_TYPES.HEADING_3],
-        [TOKEN_TYPES.HEADING_4_MARKER, NODE_TYPES.HEADING_4],
-        [TOKEN_TYPES.HEADING_5_MARKER, NODE_TYPES.HEADING_5],
-        [TOKEN_TYPES.HEADING_6_MARKER, NODE_TYPES.HEADING_6],
-        [TOKEN_TYPES.BLOCKQUOTE_MARKER, NODE_TYPES.BLOCKQUOTE],
-    ]);
-
     isStartOfPairedTokens(token) {
-        return Parser.pairedTokens.get(token.type) != undefined;
+        return PAIRED_TOKENS.get(token.type) != undefined;
     }
 
     isSolitaryMarkerToken(token) {
-        return Parser.solitaryMarkerTokens.get(token.type) != undefined;
+        return SOLITARY_MARKER_TOKENS.get(token.type) != undefined;
     }
 
     conjureNode(token) {
@@ -186,13 +186,13 @@ export class Parser {
             return textNode;
         }
         else if (this.isStartOfPairedTokens(token)) {
-            let nodeType = Parser.pairedTokens.get(token.type).nodeType;
-            let endTokenType = Parser.pairedTokens.get(token.type).end;
+            let nodeType = PAIRED_TOKENS.get(token.type).nodeType;
+            let endTokenType = PAIRED_TOKENS.get(token.type).end;
             return this.craftPairedNode(nodeType, endTokenType);
         }
         else if (this.isSolitaryMarkerToken(token)) {
             return this.addNodeOfType(
-                Parser.solitaryMarkerTokens.get(token.type)
+                SOLITARY_MARKER_TOKENS.get(token.type)
             );
         }
         else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
