@@ -4,7 +4,6 @@
  * Converts Markdown into an array of Tokens.
  */
 
-import fs from "fs";
 import { TokenTypeInfo, TOKEN_TYPES, AMBGIUOUS_TOKEN_TYPES, PAIRED_TOKEN_TYPES, ALLOWED_TOKEN_TYPES_IN_CODE, Token } from "./token.js";
 
 // discernEndTokenType takes in two arguments:
@@ -289,7 +288,12 @@ function demote(tokens) {
             // or until the stack is empty :-)
             demoteUntilStartTokenFound(stack, token);
 
-            // pop the start token
+            if (stack.length == 0) {
+                // if we're here, then no start token was found
+                convertToTextType(token);
+            }
+            
+            // otherwise, pop the start token
             if (stack.length > 0) {
                 stack.pop();
             }

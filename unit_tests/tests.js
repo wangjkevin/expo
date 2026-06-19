@@ -499,8 +499,13 @@ function runGeneratorTests() {
 function runEndToEndTests() {
     console.log("RUNNING END-TO-END TESTS...");
 
-    console.log("test 1: ")
-    let markdownString = "# ";
+    console.log("test 1: bold and italic tokens that are left open are correctly rendered");
+
+    let string = readFile("unit_tests/test_files/awkward.md");
+    console.log(tokenize(string));
+    let result = render(string);
+    let expected = readFile("unit_tests/test_files/awkward.html")
+    console.log(`\ttest passed: ${result == expected}`);
 }
 
 function main() {

@@ -7,6 +7,7 @@
 import { tokenize } from "./lexer.js";
 import { Parser } from "./parser.js";
 import { generate } from "./generator.js";
+import fs from "fs";
 
 // readFile takes in one argument, filename (string), and returns
 // the contents of the file as a string
