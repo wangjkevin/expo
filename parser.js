@@ -7,6 +7,9 @@
 import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
 import { TOKEN_TYPES, Token } from "./token.js";
 
+// like PAIRED_TOKEN_TYPES in token.js, but slightly different. because
+// we're past the tokenization layer, we also need to know what kind of node
+// each paired token type is associated with
 const PAIRED_TOKENS = new Map([
     [TOKEN_TYPES.BOLD_START, { nodeType: NODE_TYPES.BOLD, end: TOKEN_TYPES.BOLD_END }],
     [TOKEN_TYPES.ITALIC_START, { nodeType: NODE_TYPES.ITALIC, end: TOKEN_TYPES.ITALIC_END }],
@@ -14,6 +17,9 @@ const PAIRED_TOKENS = new Map([
     [TOKEN_TYPES.BLOCK_CODE_START, { nodeType: NODE_TYPES.BLOCK_CODE, end: TOKEN_TYPES.BLOCK_CODE_END }],
 ]);
 
+// SOLITARY_MARKER_TOKENS maps each marker token that are not
+// directly attached to any other kind of token (like an image marker token)
+// to the corresponding node type
 const SOLITARY_MARKER_TOKENS = new Map([
     [TOKEN_TYPES.HEADING_1_MARKER, NODE_TYPES.HEADING_1],
     [TOKEN_TYPES.HEADING_2_MARKER, NODE_TYPES.HEADING_2],
@@ -153,6 +159,10 @@ export class Parser {
         return imageNode;
     }
 
+    // craftPairedNoed takes in two arguments:
+    //     - nodeType
+    //     - endTokenType
+    // and returns the node corresponding to paired tokens
     craftPairedNode(nodeType, endTokenType) {
         // move our counter to the token after the starting token
         this.gobble();
@@ -168,14 +178,21 @@ export class Parser {
         return node;
     }
 
+    // isStartOfPairedTokens takes in one argument, token (Token),
+    // and returns true if it is the start of the pair of tokens,
+    // false otherwise
     isStartOfPairedTokens(token) {
         return PAIRED_TOKENS.get(token.type) != undefined;
     }
 
+    // isSolitaryMarkerToken takes in one argument, token (Token),
+    // and returns true if it is a solitary marker, false otherwise
     isSolitaryMarkerToken(token) {
         return SOLITARY_MARKER_TOKENS.get(token.type) != undefined;
     }
 
+    // conjureNode takes in one argument, token (Token), and returns the node
+    // corresponding to the input token
     conjureNode(token) {
         if (token.type == TOKEN_TYPES.TEXT) {
             // increment our counter by 1
@@ -205,6 +222,9 @@ export class Parser {
         return null;
     }
 
+    // parseInlineUntil takes in one argument, stopSign, and continues
+    // parsing (i.e. creating nodes) until the token we're on has a token
+    // type of stopSign
     parseInlineUntil(stopSign) {
         let allInlineNodes = [];
 
@@ -219,6 +239,8 @@ export class Parser {
         return allInlineNodes;
     }
 
+    // addNodeOfType takes in one argument, nodeType, and returns
+    // a node of type nodeType
     addNodeOfType(nodeType) {
         let node = new ASTNode(nodeType);
 
@@ -228,6 +250,8 @@ export class Parser {
         return node;
     }
 
+    // parse takes in no arguments and returns the completed
+    // abstract syntax tree!
     parse() {        
         // the root of our tree! this will be what we return...
         let tree = new AbstractSyntaxTree();
