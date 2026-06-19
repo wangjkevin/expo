@@ -47,7 +47,7 @@ export const TOKEN_TYPES = Object.freeze({
     BLOCK_CODE_START    : new TokenTypeInfo("BLOCK_CODE_START"    , "```"         , /^```/                             ),
     BLOCK_CODE_END      : new TokenTypeInfo("BLOCK_CODE_END"      , "```"         , /^```/                             ),
     NEWLINE_MARKER      : new TokenTypeInfo("NEWLINE_MARKER"      , ["\r\n", "\n"], /^\r?\n/                           ),
-    TEXT                : new TokenTypeInfo("TEXT"                , null          , /^(?:[^#*_>`\[\]()!\r\n]|>(?!\s))+/),  // everything that's not a special keyword in markdown
+    TEXT                : new TokenTypeInfo("TEXT"                , null          , /^(?:[^#*_>`\[\]()!\r\n]|\*(?!\*)|#(?!#{0,5} )|>(?!\s))+/),  // everything that's not a special keyword in markdown
     EOF                 : new TokenTypeInfo("EOF"                 , null          , null                               )
 });
 

@@ -218,6 +218,10 @@ export class Parser {
         else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
             return this.craftImageNode();
         }
+        else if (token.type == TOKEN_TYPES.NEWLINE_MARKER) {
+            this.gobble();
+            return new ASTNode(NODE_TYPES.NEWLINE);
+        }
 
         return null;
     }

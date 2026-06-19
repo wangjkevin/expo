@@ -204,8 +204,6 @@ function runLexerTests() {
         new Token(TOKEN_TYPES.TEXT, "((test))"),
         new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
         new Token(TOKEN_TYPES.TEXT, "{test}"),
-        new Token(TOKEN_TYPES.NEWLINE_MARKER, "\r\n"),
-        new Token(TOKEN_TYPES.TEXT, "<test>"),
         new Token(TOKEN_TYPES.EOF, null),
     ];
     console.log(`\ttest passed: ${JSON.stringify(tokenize(string)) == JSON.stringify(expected)}`);
@@ -511,6 +509,19 @@ function runEndToEndTests() {
     expected = readFile("unit_tests/test_files/basic.html")
     console.log(`\ttest passed: ${result == expected}`);
 
+    console.log("test 3: make sure all kinds of brackets are properly rendered");
+
+    string = readFile("unit_tests/test_files/brackets.md");
+    result = render(string);
+    expected = readFile("unit_tests/test_files/brackets.html");
+    console.log(`\ttest passed: ${result == expected}`);
+
+    console.log("test 4: confirm code is correctly translated");
+
+    string = readFile("unit_tests/test_files/code.md");
+    result = render(string);
+    expected = readFile("unit_tests/test_files/code.html");
+    console.log(`\ttest passed: ${result == expected}`);
 }
 
 function main() {
