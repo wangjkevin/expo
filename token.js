@@ -85,11 +85,11 @@ export const ALLOWED_TOKEN_TYPES_IN_CODE = [
     TOKEN_TYPES.BLOCK_CODE_START,
     TOKEN_TYPES.BLOCK_CODE_END,
 
-    // just like in Ed, let's allow bolding and italicizing code! :D
-    TOKEN_TYPES.BOLD_START,
-    TOKEN_TYPES.BOLD_END,
-    TOKEN_TYPES.ITALIC_START,
-    TOKEN_TYPES.ITALIC_END,
+    // // just like in Ed, let's allow bolding and italicizing code! :D
+    // TOKEN_TYPES.BOLD_START,
+    // TOKEN_TYPES.BOLD_END,
+    // TOKEN_TYPES.ITALIC_START,
+    // TOKEN_TYPES.ITALIC_END,
 
     // this is so newline characters aren't blocked
     TOKEN_TYPES.NEWLINE_MARKER,

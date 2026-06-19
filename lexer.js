@@ -123,7 +123,7 @@ function discernTextTokenType(inCode, inURL, tokens, tokenType) {
     }
 
     //   (4) if we're inside a URL, we should always convert the token to a text token
-    if (inURL && tokenType != TOKEN_TYPES.LINK_URL_END && tokenTYpe != TOKEN_TYPES.IMAGE_URL_END) {
+    if (inURL && tokenType != TOKEN_TYPES.LINK_URL_END && tokenType != TOKEN_TYPES.IMAGE_URL_END) {
         return TOKEN_TYPES.TEXT;
     }
 
@@ -224,7 +224,7 @@ function findToken(string, tokens, inCode, inURL) {
 
         // if we've reached this point, we've found a match 
         // and don't need to continue looping anymore
-        return [new Token(tokenType, matchedString), remainingString, inCode];
+        return [new Token(tokenType, matchedString), remainingString, inCode, inURL];
     }
 }
 
