@@ -38,12 +38,13 @@ export function generate(root) {
     let result = tags.start;
 
     // oddball edge cases:
-    // (1) for text, we sandwich the actual text between two empty strings
+    //   (1) for text, we sandwich the actual text between two empty strings
     if (root.type == NODE_TYPES.TEXT) {
         result += root.contents;
     }
-    // (2) for links and images, we have to do some string processings and fill in the 
-    // empty string in the href attribute with the actual URL we want to include
+    //   (2) for links and images, we have to do some string processings and fill 
+    //       in the empty string in the href attribute with the actual URL we want
+    //       to include
     if (root.type == NODE_TYPES.LINK || root.type == NODE_TYPES.IMAGE) {
         result = result.replace(`""`, `"${root.contents}"`);
     }

@@ -6,8 +6,18 @@
 
 import { AbstractSyntaxTree, ASTNode, NODE_TYPES } from "./abstractSyntaxTree.js";
 import { TOKEN_TYPES, Token } from "./token.js";
-import { tokenize, readFile } from "./lexer.js";
 
+// this Parser class provides functionality to parse
+// an array of tokens and create an abstract syntax tree (AST)
+// from this array. unlike the lexer (or generator), we put
+// all the logic to parse under this class due to how we parse
+// tokens. as we parse tokens, we keep track of where we are within
+// the tokens array with the member variable currentIndex. however,
+// with a functional programming approach, we would have to 
+// pass this currentIndex in and out of functions, and we would always
+// have to return this currentIndex parameter anytime we would update
+// its value in a function. for this reason, the parsing implementation
+// is abstracted through this class
 export class Parser {
     constructor(tokens) {
         // our array of tokens!
@@ -31,8 +41,8 @@ export class Parser {
     }
 
     // gobble takes in no arguments,
-    // and returns the token at currentIndex, as well as 
-    // an incremented index
+    // and returns the token at currentIndex, and then increments
+    // currentIndex
     gobble() {
         if (this.eye().type == TOKEN_TYPES.EOF) {
             return;
@@ -44,6 +54,9 @@ export class Parser {
         return this.tokens[this.currentIndex++];
     }
 
+    // craftLinkeNode takes in no arguments and crafts a link node
+    // it gobbles up tokens in our tokens array, conjuring up the
+    // properties of the node as we go
     craftLinkNode() {
         let linkNode = new ASTNode(NODE_TYPES.LINK);
 
@@ -71,6 +84,10 @@ export class Parser {
         return linkNode;
     }
 
+    // gobbleUpLexemesUntil takes in one argument, stopType (TokenTypeInfo),
+    // and returns a single concatenated lexeme of all the lexemes from
+    // where we currently are in the tokens array with currentIndex up until
+    // we hit a token of type stopType
     gobbleUpLexemesUntil(stopType) {
         let concatenatedLexeme = "";
 
@@ -83,6 +100,9 @@ export class Parser {
         return concatenatedLexeme;
     }
 
+    // craftImageNode takes in no arguments and crafts an image node
+    // it gobbles up tokens in our tokens array, conjuring up the
+    // properties of the node as we go
     craftImageNode() {
         let imageNode = new ASTNode(NODE_TYPES.IMAGE);
 
@@ -116,6 +136,46 @@ export class Parser {
         return imageNode;
     }
 
+    craftPairedNode(nodeType, endTokenType) {
+        // move our counter to the token after the starting token
+        this.gobble();
+
+        let node = new ASTNode(nodeType);
+
+        // we have to parse inline again until we encounter a ending token
+        node.children = this.parseInlineUntil(endTokenType);
+
+        // now we're at the ending token. gobble it up!
+        this.gobble();
+
+        return node;
+    }
+
+    static pairedTokens = new Map([
+        [TOKEN_TYPES.BOLD_START, { nodeType: NODE_TYPES.BOLD, end: TOKEN_TYPES.BOLD_END }],
+        [TOKEN_TYPES.ITALIC_START, { nodeType: NODE_TYPES.ITALIC, end: TOKEN_TYPES.ITALIC_END }],
+        [TOKEN_TYPES.INLINE_CODE_START, { nodeType: NODE_TYPES.INLINE_CODE, end: TOKEN_TYPES.INLINE_CODE_END }],
+        [TOKEN_TYPES.BLOCK_CODE_START, { nodeType: NODE_TYPES.BLOCK_CODE, end: TOKEN_TYPES.BLOCK_CODE_END }],
+    ]);
+
+    static solitaryMarkerTokens = new Map([
+        [TOKEN_TYPES.HEADING_1_MARKER, NODE_TYPES.HEADING_1],
+        [TOKEN_TYPES.HEADING_2_MARKER, NODE_TYPES.HEADING_2],
+        [TOKEN_TYPES.HEADING_3_MARKER, NODE_TYPES.HEADING_3],
+        [TOKEN_TYPES.HEADING_4_MARKER, NODE_TYPES.HEADING_4],
+        [TOKEN_TYPES.HEADING_5_MARKER, NODE_TYPES.HEADING_5],
+        [TOKEN_TYPES.HEADING_6_MARKER, NODE_TYPES.HEADING_6],
+        [TOKEN_TYPES.BLOCKQUOTE_MARKER, NODE_TYPES.BLOCKQUOTE],
+    ]);
+
+    isStartOfPairedTokens(token) {
+        return Parser.pairedTokens.get(token.type) != undefined;
+    }
+
+    isSolitaryMarkerToken(token) {
+        return Parser.solitaryMarkerTokens.get(token.type) != undefined;
+    }
+
     parseInlineUntil(stopSign) {
         let allInlineNodes = [];
 
@@ -131,84 +191,21 @@ export class Parser {
                 let textNode = new ASTNode(NODE_TYPES.TEXT, token.lexeme);
                 allInlineNodes.push(textNode);
             }
-            else if (token.type == TOKEN_TYPES.BOLD_START) {
-                // move our counter to the token after the starting bold token
-                this.gobble();
-
-                // if we encounter a starting bold token, we have to parse inline
-                // again until we encounter a ending bold token
-                let boldNode = new ASTNode(NODE_TYPES.BOLD);
-
-                // recursive case!!!
-                boldNode.children = this.parseInlineUntil(TOKEN_TYPES.BOLD_END);
-
-                // now we're at the bold end token. gobble it up!
-                this.gobble();
-
-                allInlineNodes.push(boldNode);
+            else if (this.isStartOfPairedTokens(token)) {
+                let nodeType = Parser.pairedTokens.get(token.type).nodeType;
+                let endTokenType = Parser.pairedTokens.get(token.type).end;
+                allInlineNodes.push(this.craftPairedNode(nodeType, endTokenType));
             }
-            else if (token.type == TOKEN_TYPES.ITALIC_START) {
-                // move our counter to the token after the starting italic token
-                this.gobble();
-
-                let italicNode = new ASTNode(NODE_TYPES.ITALIC);
-
-                italicNode.children = this.parseInlineUntil(TOKEN_TYPES.ITALIC_END);
-
-                // now we're at the italic end token. gobble it up!
-                this.gobble();
-
-                allInlineNodes.push(italicNode);
-            }
-            else if (token.type == TOKEN_TYPES.INLINE_CODE_START) {
-                // move our counter to the token after the starting inline code token
-                this.gobble();
-
-                let inlineCodeNode = new ASTNode(NODE_TYPES.INLINE_CODE);
-
-                inlineCodeNode.children = this.parseInlineUntil(TOKEN_TYPES.INLINE_CODE_END);
-
-                this.gobble();
-
-                allInlineNodes.push(inlineCodeNode);
-            }
-            else if (token.type == TOKEN_TYPES.BLOCK_CODE_START) {
-                this.gobble();
-
-                let blockCodeNode = new ASTNode(NODE_TYPES.BLOCK_CODE);
-
-                blockCodeNode.chidlren = this.parseInlineUntil(TOKEN_TYPES.BLOCK_CODE_END);
-
-                this.gobble();
-
-                allInlineNodes.push(blockCodeNode);
+            else if (this.isSolitaryMarkerToken(token)) {
+                allInlineNodes.push(this.addNodeOfType(
+                    Parser.solitaryMarkerTokens.get(token.type)
+                ));
             }
             else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
                 allInlineNodes.push(this.craftLinkNode());
             }
             else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
                 allInlineNodes.push(this.craftImageNode());
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_1_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_1));
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_2_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_2));
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_3_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_3));
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_4_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_4));
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_5_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_5));
-            }
-            else if (token.type == TOKEN_TYPES.HEADING_6_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.HEADING_6));
-            }
-            else if (token.type == TOKEN_TYPES.BLOCKQUOTE_MARKER) {
-                allInlineNodes.push(this.addNodeOfType(NODE_TYPES.BLOCKQUOTE));
             }
         }
 
@@ -217,37 +214,11 @@ export class Parser {
 
     addNodeOfType(nodeType) {
         let node = new ASTNode(nodeType);
+
         this.gobble();
         node.children = this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
-        // gobble up the newline symbol
-        // this.gobble();
-        return [node];
-    }
 
-    parseBlock() {
-        let token = this.eye();
-
-        switch (token.type) {
-            case TOKEN_TYPES.HEADING_1_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_1);
-            case TOKEN_TYPES.HEADING_2_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_2);
-            case TOKEN_TYPES.HEADING_3_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_3);
-            case TOKEN_TYPES.HEADING_4_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_4);
-            case TOKEN_TYPES.HEADING_5_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_5);
-            case TOKEN_TYPES.HEADING_6_MARKER:
-                return this.addNodeOfType(NODE_TYPES.HEADING_6);
-            case TOKEN_TYPES.BLOCKQUOTE_MARKER: 
-                return this.addNodeOfType(NODE_TYPES.BLOCKQUOTE);
-            case TOKEN_TYPES.NEWLINE_MARKER:
-                this.gobble();
-                return [new ASTNode(NODE_TYPES.NEWLINE)];
-            default:
-                return this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER);
-        }
+        return node;
     }
 
     parse() {        
@@ -255,7 +226,13 @@ export class Parser {
         let tree = new AbstractSyntaxTree();
 
         while (this.eye().type !== TOKEN_TYPES.EOF) {
-            tree.root.children.push(...this.parseBlock());
+            if (this.eye().type == TOKEN_TYPES.NEWLINE_MARKER) {
+                this.gobble();
+                tree.root.children.push(new ASTNode(NODE_TYPES.NEWLINE));
+            }
+            else {
+                tree.root.children.push(...this.parseInlineUntil(TOKEN_TYPES.NEWLINE_MARKER));
+            }
         }
 
         // our completed syntax tree!
