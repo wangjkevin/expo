@@ -176,6 +176,35 @@ export class Parser {
         return Parser.solitaryMarkerTokens.get(token.type) != undefined;
     }
 
+    conjureNode(token) {
+        if (token.type == TOKEN_TYPES.TEXT) {
+            // increment our counter by 1
+            this.gobble();
+
+            // text is simplest case: we just push it into our inline nodes array
+            let textNode = new ASTNode(NODE_TYPES.TEXT, token.lexeme);
+            return textNode;
+        }
+        else if (this.isStartOfPairedTokens(token)) {
+            let nodeType = Parser.pairedTokens.get(token.type).nodeType;
+            let endTokenType = Parser.pairedTokens.get(token.type).end;
+            return this.craftPairedNode(nodeType, endTokenType);
+        }
+        else if (this.isSolitaryMarkerToken(token)) {
+            return this.addNodeOfType(
+                Parser.solitaryMarkerTokens.get(token.type)
+            );
+        }
+        else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
+            return this.craftLinkNode();
+        }
+        else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
+            return this.craftImageNode();
+        }
+
+        return null;
+    }
+
     parseInlineUntil(stopSign) {
         let allInlineNodes = [];
 
@@ -183,30 +212,8 @@ export class Parser {
         while (this.eye().type != stopSign && this.eye().type != TOKEN_TYPES.EOF) {
             let token = this.eye();
 
-            if (token.type == TOKEN_TYPES.TEXT) {
-                // increment our counter by 1
-                this.gobble();
-
-                // text is simplest case: we just push it into our inline nodes array
-                let textNode = new ASTNode(NODE_TYPES.TEXT, token.lexeme);
-                allInlineNodes.push(textNode);
-            }
-            else if (this.isStartOfPairedTokens(token)) {
-                let nodeType = Parser.pairedTokens.get(token.type).nodeType;
-                let endTokenType = Parser.pairedTokens.get(token.type).end;
-                allInlineNodes.push(this.craftPairedNode(nodeType, endTokenType));
-            }
-            else if (this.isSolitaryMarkerToken(token)) {
-                allInlineNodes.push(this.addNodeOfType(
-                    Parser.solitaryMarkerTokens.get(token.type)
-                ));
-            }
-            else if (token.type == TOKEN_TYPES.LINK_TEXT_START) {
-                allInlineNodes.push(this.craftLinkNode());
-            }
-            else if (token.type == TOKEN_TYPES.IMAGE_MARKER) {
-                allInlineNodes.push(this.craftImageNode());
-            }
+            let node = this.conjureNode(token);
+            if (node != null) allInlineNodes.push(node);
         }
 
         return allInlineNodes;
