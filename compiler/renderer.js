@@ -32,3 +32,5 @@ export function render(markdownString) {
     // the fruits of our labor...
     return htmlString;
 }
+
+console.log(render(readFile("unit_tests/test_files/finale.md")));

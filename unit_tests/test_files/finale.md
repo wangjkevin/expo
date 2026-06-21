@@ -1,4 +1,4 @@
-## Extra Practice Problems! 🎯
+# Extra Practice Problems! 🎯
 
 Written by Kevin Wang
 kevjwang@stanford.edu
@@ -8,11 +8,11 @@ Hi scholars! As we near the final, I wanted to give you all more opportunities t
 
 Checkpoint: These problems are quite challenging!  Consider tackling these problems after finishing and thoroughly understanding the provided practice tests!
 
-### Backtracking: Solving _Connections!_
+## Backtracking: Solving _Connections!_
 
-You’ve probably heard of it: the notorious [Connections](https://www.google.com/url?q=https://www.nytimes.com/games/connections/&sa=D&source=editors&ust=1773223570887454&usg=AOvVaw0_6U8AoLRAzmDed6CYz0UP) puzzle, infamously crafted by puzzle creator [Wyna Liu](https://www.google.com/url?q=https://www.wynaliu.com/about&sa=D&source=editors&ust=1773223570887617&usg=AOvVaw2xsPg0-ogXL968MUoY0pSv) and released daily by the New York Times. In Connections, your goal is to form four groups of four items each, where each group shares something in common. There’s always exactly one solution for each puzzle, and each group is more difficult than the previous. If you haven’t played this game before, try solving today’s puzzle! Chances are it’s not that easy. This experience of frustration will form the backbone of this problem. >:-)
+You've probably heard of it: the notorious [Connections](https://www.google.com/url?q=https://www.nytimes.com/games/connections/&sa=D&source=editors&ust=1773223570887454&usg=AOvVaw0_6U8AoLRAzmDed6CYz0UP) puzzle, infamously crafted by puzzle creator [Wyna Liu](https://www.google.com/url?q=https://www.wynaliu.com/about&sa=D&source=editors&ust=1773223570887617&usg=AOvVaw2xsPg0-ogXL968MUoY0pSv) and released daily by the New York Times. In Connections, your goal is to form four groups of four items each, where each group shares something in common. There's always exactly one solution for each puzzle, and each group is more difficult than the previous. If you haven't played this game before, try solving today's puzzle! Chances are it's not that easy. This experience of frustration will form the backbone of this problem. >:-)
 
-As a primer, Connections is played in a 4x4 grid, and your goal is to form four semantically-tight groups of four words. For example, here’s the puzzle for March 9, 2026:
+As a primer, Connections is played in a 4x4 grid, and your goal is to form four semantically-tight groups of four words. For example, here's the puzzle for March 9, 2026:
 
 ![connections board, unsolved](https://stanford.edu/~kevjwang/cs106b/finale/images/image7.png)
 
@@ -20,13 +20,13 @@ And here's the solution:
 
 ![connections board, solve](https://stanford.edu/~kevjwang/cs106b/finale/images/image5.png)
 
-In this problem, you’ll be writing the following function:
+In this problem, you'll be writing the following function:
 
 ```
 bool solvePuzzle(Set<string> words, Set<Set<string>> &categories);
 ```
 
-where you’ll go through every possible combination of categories until you reach the official solution. You’ll know that you have the true, official solution if this provided function:
+where you'll go through every possible combination of categories until you reach the official solution. You'll know that you have the true, official solution if this provided function:
 
 ```
 bool wynaApproved(Set<Set<string>> categories);
@@ -87,16 +87,16 @@ bool solvePuzzle(Set<string> words, Set<Set<string>> &categories) {
 }
 ```
 
-### Linked Lists and Exploding Kittens!
+## Linked Lists and Exploding Kittens!
 
 [Exploding Kittens](https://www.google.com/url?q=https://cdn.shopify.com/s/files/1/0345/9180/1483/files/ekoe-instructions-english.pdf?v%3D1743802429&sa=D&source=editors&ust=1773223570896694&usg=AOvVaw34PZNWvPPzr-fxL5Vt_Wp7) is a card game where players continue to draw cards from a pile until they draw an Exploding Kitten, at which point, the person who drew the card is out.
 
 ![exploding kittens image](https://stanford.edu/~kevjwang/cs106b/finale/images/image1.png)
 _Some of the cards in Exploding Kittens!_
 
-There’s an important preprocessing step when playing this game, which is going to be the focus of this problem. Before the start of every game, we’ll need to take out all the Exploding Kittens in this deck of cards so that we can reinsert them back in.
+There's an important preprocessing step when playing this game, which is going to be the focus of this problem. Before the start of every game, we'll need to take out all the Exploding Kittens in this deck of cards so that we can reinsert them back in.
 
-We’ll represent the deck of cards as a singly-linked list. The struct for each element in this list is similar to what you’ve seen before, except that instead of storing a value, we’ll store a true/false indicator of whether the card is an exploding kitten or not.
+We'll represent the deck of cards as a singly-linked list. The struct for each element in this list is similar to what you've seen before, except that instead of storing a value, we'll store a true/false indicator of whether the card is an exploding kitten or not.
 
 ```
 struct Card {
@@ -111,9 +111,9 @@ Your task is to remove all the exploding kitten cards in the deck of cards passe
 Card* diffuse(Card* &deck);
 ```
 
-Don’t create or destroy any new nodes in this problem. Simply rewire and transfer these exploding kitten cards into this new list, which is the return value of this function.
+Don't create or destroy any new nodes in this problem. Simply rewire and transfer these exploding kitten cards into this new list, which is the return value of this function.
 
-Have fun with this problem! Rewire with grace, and you’ll successfully diffuse all the exploding kittens from the deck. :-)
+Have fun with this problem! Rewire with grace, and you'll successfully diffuse all the exploding kittens from the deck. :-)
 
 ```
 Card* remove(Card* &deck, Card* prev, Card* curr) {
@@ -184,14 +184,14 @@ Card* diffuse(Card* &deck) {
 }
 ```
 
-### Champion of Memory Diagrams: Minecraft Championship
+## Champion of Memory Diagrams: Minecraft Championship
 
-There’s a really popular, monthly Minecraft tournament, hosted by [Noxcrew](noxcrew.com/mcc) and [Scott Smajor](youtube.com/dangthatsalongname), called [Minecraft Championship](mcc.live), where 40 beloved Minecraft content creators are split into 10 teams of four to compete for the crown. They compete across a variety of minigames: the infamous [Parkour Warrior](https://www.youtube.com/watch?v=Rx_L1SbZ14k), the intense [Meltdown](https://www.youtube.com/watch?v=SbOrZFyKt2k), and the classic [Bingo But Fast](https://www.youtube.com/watch?v=IcuWBsYF9C4).
+There's a really popular, monthly Minecraft tournament, hosted by [Noxcrew](noxcrew.com/mcc) and [Scott Smajor](youtube.com/dangthatsalongname), called [Minecraft Championship](mcc.live), where 40 beloved Minecraft content creators are split into 10 teams of four to compete for the crown. They compete across a variety of minigames: the infamous [Parkour Warrior](https://www.youtube.com/watch?v=Rx_L1SbZ14k), the intense [Meltdown](https://www.youtube.com/watch?v=SbOrZFyKt2k), and the classic [Bingo But Fast](https://www.youtube.com/watch?v=IcuWBsYF9C4).
 
 ![mcc](https://stanford.edu/~kevjwang/cs106b/finale/images/image2.png)
-_Minecraft Championship’s logo overlaid on top of the Decision Dome._
+_Minecraft Championship's logo overlaid on top of the Decision Dome._
 
-In this problem, you’ll draw out a memory diagram of the stack and the heap after the following lines of code execute. Succeed, and you might find yourself on the throne! 👑
+In this problem, you'll draw out a memory diagram of the stack and the heap after the following lines of code execute. Succeed, and you might find yourself on the throne! 👑
 
 ```
 struct Minigame {
@@ -202,14 +202,14 @@ struct Minigame {
 Minigame* games = new Minigame[3];
 
 Minigame* meltdown = &(games[0]);
-meltdown->name = “Meltdown”;
+meltdown->name = "Meltdown";
 meltdown->isPlayed = false;
 
-Minigame bingo = {“Bingo But Fast”, false};
+Minigame bingo = {"Bingo But Fast", false};
 Minigame* currentGame = &bingo;
 currentGame->isPlayed = true;
 
-games[2].name = “Parkour Warrior”;
+games[2].name = "Parkour Warrior";
 bool* ptr = &(games[2].isPlayed);
 *ptr = false;
 
@@ -218,22 +218,22 @@ delete[] games;
 
 ![memory diagram solution](https://stanford.edu/~kevjwang/cs106b/finale/images/image3.png)
 
-### Binary Space Partioning in _Doom_
+## Binary Space Partioning in _Doom_
 
-_Doom_ (1993) is one of those canonical video games that completely transfigured the video game landscape. It’s considered the first first-person shooter (FPS), and it revolutionized the development of game engines, as well as set up the form of the FPS (just like the structure of a novel) that would reverberate throughout every FPS game out there, like Valorant or CS:GO.
+_Doom_ (1993) is one of those canonical video games that completely transfigured the video game landscape. It's considered the first first-person shooter (FPS), and it revolutionized the development of game engines, as well as set up the form of the FPS (just like the structure of a novel) that would reverberate throughout every FPS game out there, like Valorant or CS:GO.
 
 ![doom image](https://stanford.edu/~kevjwang/cs106b/finale/images/image4.png)
 _For 1993, these graphics are incredible! For reference, the public release of the World Wide Web was in 1993. :O_
 
-In this problem, we’ll explore one of Doom’s secrets to fast rendering: **binary space partitioning**.
+In this problem, we'll explore one of Doom's secrets to fast rendering: **binary space partitioning**.
 
-It’s expensive to load up the entire physical map of a game. For example, in Minecraft, you wouldn’t render the entire world, which would contain **quadrillions**! of blocks. Instead, we only render to the screen what we need to. Binary space partitioning is a way of deciding what to render so that we only render what we need to, nothing more.
+It's expensive to load up the entire physical map of a game. For example, in Minecraft, you wouldn't render the entire world, which would contain **quadrillions**! of blocks. Instead, we only render to the screen what we need to. Binary space partitioning is a way of deciding what to render so that we only render what we need to, nothing more.
 
-We start with a large space, like the entire map of Doom. Then, we recursively divide this space into two regions—exactly like a binary tree! If we’re on the right-hand side of this map, we should only render stuff in the right region, and if we’re on the left-hand side of this map, we should only render stuff in the left region. If we continue this, we’ll have multiple smaller regions of our map rendered “on-the-fly” rather than the whole map—how cool is that!
+We start with a large space, like the entire map of Doom. Then, we recursively divide this space into two regions—exactly like a binary tree! If we're on the right-hand side of this map, we should only render stuff in the right region, and if we're on the left-hand side of this map, we should only render stuff in the left region. If we continue this, we'll have multiple smaller regions of our map rendered "on-the-fly" rather than the whole map—how cool is that!
 
-Here’s an example of a BSP tree of a hotel:
+Here's an example of a BSP tree of a hotel:
 ![BSP](https://stanford.edu/~kevjwang/cs106b/finale/images/image6.png)
-Rendering the entire hotel map would be expensive, so instead, we divide the map into specific regions. Each arrow can be thought of as a corridor or a door. For example, to enter the Kitchen, you know you’ll have to enter through the Diner first, and then walk into the Kitchen. To get to the Second Floor, you’ll have to take the Elevator first, which’ll then lead you to the Second Floor. You can assume that everyone starts at the Lobby.
+Rendering the entire hotel map would be expensive, so instead, we divide the map into specific regions. Each arrow can be thought of as a corridor or a door. For example, to enter the Kitchen, you know you'll have to enter through the Diner first, and then walk into the Kitchen. To get to the Second Floor, you'll have to take the Elevator first, which'll then lead you to the Second Floor. You can assume that everyone starts at the Lobby.
 
 With the following struct:
 
@@ -245,23 +245,23 @@ struct BSPNode {
 };
 ```
 
-In this problem, you’ll implement the following function:
+In this problem, you'll implement the following function:
 
 ```
 Vector<string> findShortestPathTo(string room, BSPNode* root);
 ```
 
 
-Your goal is to find the shortest path to the room specified. For example, if `room` was `“Kitchen”`, the shortest path would be:
+Your goal is to find the shortest path to the room specified. For example, if `room` was `"Kitchen"`, the shortest path would be:
 ```
-{“Lobby”, “Diner”, “Kitchen”}
+{"Lobby", "Diner", "Kitchen"}
 ```
 since we start at the Lobby, and can choose to go to the Diner, and then end up at the Kitchen.
 
 
-As another example, if room was `“Second Floor”`, we should `return`:
+As another example, if room was `"Second Floor"`, we should `return`:
 ```
-{“Lobby”, “Elevator”, “Second Floor”}
+{"Lobby", "Elevator", "Second Floor"}
 ```
 
 This would mean that if a player were planning on traveling straight to the Second Floor, we would only have to render three rooms rather than all six! How cool is that!

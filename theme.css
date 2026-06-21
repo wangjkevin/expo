@@ -1,0 +1,29 @@
+/* Name: Kevin Wang
+ * File: theme.css
+ * ------------------
+ * Styles for handouts!
+ */
+
+/* backup "Comic Sans" font -- on Mac, Comic Sans MS does not render, so we'll use this more modern version instead :) */
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+/* for inline code and code blocks! */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+/* the main body of our handout -- what kinds of styles do we want to apply to the handout overall? */
+#generated-code {
+    max-width: 500pt;
+    width: 100%;  /* prevents expansion/resizing issues */
+    padding: 72pt;
+    margin: 0 auto; /* centers the page */
+    font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", sans-serif;
+    font-size: 12pt;  /* by default */
+}
+
+#generated-code h1 {
+    font-size: 16pt;
+}
+
+#generated-code h2 {
+    font-size: 13pt;
+}
