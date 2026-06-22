@@ -14,7 +14,7 @@ function stylize(cssFile) {
     return `<link rel="stylesheet" href="${cssFile}">`;
 }
 
-async function main() {
+async function handleInput() {
     if (isInBrowser()) {
         let rendererTag = document.getElementById("renderer");
         rendererTag.innerHTML = stylize("theme.css");
@@ -27,6 +27,8 @@ async function main() {
                 rendererTag.innerHTML += render(markdownContents);
                 MathJax.typesetPromise([rendererTag]);  // render any LaTeX
             });
+
+        console.log(rendererTag);
     }
     else {
         const fs = await import("fs");
@@ -46,6 +48,10 @@ async function main() {
         fs.writeFileSync(outputFile, renderedHTML);
         console.log(`Wrote to ${outputFile}!`);
     }
+}
+
+function main() {
+    handleInput();
 }
 
 main();

@@ -417,7 +417,7 @@ export function tokenize(string) {
     let inURL = false;
     while (string.length > 0) {
         let token;
-
+        
         [token, string, inCode, inURL] = findToken(string, tokens, inCode, inURL);
 
         // and add our token to our tokens array

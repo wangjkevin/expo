@@ -5,8 +5,7 @@ kevjwang@stanford.edu
 
 Hi scholars! As we near the final, I wanted to give you all more opportunities to practice your CS106B skillz! At its heart, computer science can be described as the study of games. Hence, these problems are all game-themed! I hope you enjoy, and I hope you'll try out one of these games--perhaps now, or after the final!
 
-
-Checkpoint: These problems are quite challenging!  Consider tackling these problems after finishing and thoroughly understanding the provided practice tests!
+<div class="checkpoint">_**Checkpoint:** These problems are quite challenging!  <span style="font-size: 10pt;">Consider tackling these problems after finishing and thoroughly understanding the provided practice tests!</span>_</div>
 
 ## Backtracking: Solving _Connections!_
 

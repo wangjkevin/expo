@@ -1,7 +1,7 @@
 # **bold** _italics_ `code`
 
 ```
-_// this function is **super** important!_
+// this function is super important!
 bool binarySearch(Vector<int> haystack, int needle) {
     [...]
 }

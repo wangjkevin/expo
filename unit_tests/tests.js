@@ -4,12 +4,13 @@
  * Runs unit tests for the compiler.
  */
 
-import { Token, TOKEN_TYPES } from "../token.js";
-import { tokenize } from "../lexer.js";
-import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../abstractSyntaxTree.js";
-import { Parser } from "../parser.js";
-import { generate } from "../generator.js";
-import { render } from "../renderer.js";
+import { Token, TOKEN_TYPES } from "../compiler/token.js";
+import { tokenize } from "../compiler/lexer.js";
+import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../compiler/abstractSyntaxTree.js";
+import { Parser } from "../compiler/parser.js";
+import { generate } from "../compiler/generator.js";
+import { render } from "../compiler/renderer.js";
+import fs from "fs";
 
 // readFile takes in one argument, filename (string), and returns
 // the contents of the file as a string
@@ -435,7 +436,7 @@ function runGeneratorTests() {
 
     tree.root.children.push(imageNode);
 
-    expected = `<div id="generated-code"><img href="https://serebii.net/potw-champions/Victreebel.jpg">alt text</img></div>`;
+    expected = `<div id="generated-code"><img src="https://serebii.net/potw-champions/Victreebel.jpg" alt="alt text"></img></div>`;
 
     console.log(`\ttest passed: ${generate(tree.root) == expected}`);
 

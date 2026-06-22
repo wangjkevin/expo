@@ -12,18 +12,33 @@
 
 /* the main body of our handout -- what kinds of styles do we want to apply to the handout overall? */
 #generated-code {
-    max-width: 500pt;
+    max-width: 468pt;
     width: 100%;  /* prevents expansion/resizing issues */
     padding: 72pt;
     margin: 0 auto; /* centers the page */
     font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", sans-serif;
-    font-size: 12pt;  /* by default */
+    font-size: 11pt;  /* by default */
+    padding-top: 0pt;
+    padding-bottom: 0pt;
+    line-height: 1.15;
 }
 
 #generated-code h1 {
     font-size: 16pt;
+    text-align: center;
 }
 
 #generated-code h2 {
     font-size: 13pt;
+    text-align: center;
+}
+
+#generated-code h3 {
+    font-size: 12pt;
+    text-align: center;
+}
+
+.checkpoint {
+    padding: 14.4pt;
+    background-color: rgb(255, 242, 204);
 }
