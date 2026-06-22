@@ -24,8 +24,11 @@
 }
 
 #generated-code h1 {
-    font-size: 16pt;
+    font-size: 19pt;
     text-align: center;
+
+    /* add some big padding on the top, this is okay since we only ever use h1's for the title */
+    padding-top: 72pt;
 }
 
 #generated-code h2 {
@@ -38,7 +41,38 @@
     text-align: center;
 }
 
+#generated-code img {
+    /* all images are centered by default */
+    /* we need both of the tags below to center the image */
+    display: block;
+    margin: auto;
+}
+
+#generated-code pre {
+    padding: 6.667pt;
+    text-wrap: wrap;
+    background-color: rgb(230, 230, 250);
+}
+
 .checkpoint {
     padding: 14.4pt;
     background-color: rgb(255, 242, 204);
+    font-size: 9pt;
+}
+
+.hint {
+    padding: 14.4pt;
+    background-color: rgb(227, 244, 250);
+    font-size: 9pt;
+}
+
+.byline {
+    text-align: right;
+    font-size: 10pt;
+    color: #7F7F7F;
+}
+
+.center { 
+    display: block;
+    margin: auto;
 }
