@@ -9,7 +9,13 @@ import { tokenize } from "../lexer.js";
 import { ASTNode, AbstractSyntaxTree, NODE_TYPES } from "../abstractSyntaxTree.js";
 import { Parser } from "../parser.js";
 import { generate } from "../generator.js";
-import { readFile, render } from "../renderer.js";
+import { render } from "../renderer.js";
+
+// readFile takes in one argument, filename (string), and returns
+// the contents of the file as a string
+function readFile(filename) {
+    return fs.readFileSync(filename, "utf8");
+}
 
 /////////////////////////////// LEXER TESTS ///////////////////////////////
 

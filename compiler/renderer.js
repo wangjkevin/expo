@@ -7,13 +7,6 @@
 import { tokenize } from "./lexer.js";
 import { Parser } from "./parser.js";
 import { generate } from "./generator.js";
-import fs from "fs";
-
-// readFile takes in one argument, filename (string), and returns
-// the contents of the file as a string
-export function readFile(filename) {
-    return fs.readFileSync(filename, "utf8");
-}
 
 // render takes in one argument, markdownString (string),
 // and returns the equivalent translated HTML string!
@@ -32,5 +25,3 @@ export function render(markdownString) {
     // the fruits of our labor...
     return htmlString;
 }
-
-console.log(render(readFile("unit_tests/test_files/finale.md")));
