@@ -191,9 +191,9 @@ function toggleInURLState(tokenType, inURL) {
 }
 
 function escapeHTML(text) {
-    return text.replace(/&/g, "&amp;")
-               .replace(/</g, "&lt;")
-               .replace(/>/g, "&gt;");
+    return text.replace("&", "&amp;")
+               .replace("<", "&lt;")
+               .replace(">", "&gt;");
 }
 
 // findToken takes in four arguments:
@@ -222,16 +222,16 @@ function findToken(string, tokens, inCode, inURL) {
         let discernedTokenType = discernTokenType(matchedString, tokens, inCode, inURL, tokenType);
         if (discernedTokenType != null) tokenType = discernedTokenType;
 
-        // escape out any HTML characters that may be sucked into an HTML tag...
-        if (inCode) {
-            matchedString = escapeHTML(matchedString);
-        }
-
         inCode = toggleInCodeState(tokenType, inCode);
         inURL = toggleInURLState(tokenType, inURL);
 
         // remove the matched characters
         let remainingString = string.slice(matchedString.length);
+
+        // escape out any HTML characters that may be sucked into an HTML tag...
+        if (inCode) {
+            matchedString = escapeHTML(matchedString);
+        }
 
         // if we've reached this point, we've found a match 
         // and don't need to continue looping anymore

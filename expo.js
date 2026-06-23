@@ -28,7 +28,7 @@ async function handleInput() {
                 MathJax.typesetPromise([rendererTag]);  // render any LaTeX
             });
 
-        console.log(rendererTag);
+        console.log(`RENDERED HTML:\n${render(markdownContents)}`);
     }
     else {
         const fs = await import("fs");
