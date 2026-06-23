@@ -535,6 +535,8 @@ function runEndToEndTests() {
     string = readFile("unit_tests/test_files/nested.md");
     result = render(string);
     expected = readFile("unit_tests/test_files/nested.html");
+
+    console.log(result);
     console.log(`\ttest passed: ${result == expected}`);
 }
 

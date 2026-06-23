@@ -26,6 +26,7 @@
 #generated-code h1 {
     font-size: 19pt;
     text-align: center;
+    margin: 0;
 
     /* add some big padding on the top, this is okay since we only ever use h1's for the title */
     padding-top: 72pt;
@@ -34,6 +35,7 @@
 #generated-code h2 {
     font-size: 13pt;
     text-align: center;
+    margin: 0;
 }
 
 #generated-code h3 {
@@ -52,6 +54,8 @@
     padding: 6.667pt;
     text-wrap: wrap;
     background-color: rgb(230, 230, 250);
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .checkpoint {

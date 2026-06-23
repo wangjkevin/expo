@@ -190,6 +190,12 @@ function toggleInURLState(tokenType, inURL) {
     return inURL;
 }
 
+function escapeHTML(text) {
+    return text.replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;");
+}
+
 // findToken takes in four arguments:
 //     - string (string)
 //     - tokens (an array of Tokens)
@@ -215,6 +221,11 @@ function findToken(string, tokens, inCode, inURL) {
 
         let discernedTokenType = discernTokenType(matchedString, tokens, inCode, inURL, tokenType);
         if (discernedTokenType != null) tokenType = discernedTokenType;
+
+        // escape out any HTML characters that may be sucked into an HTML tag...
+        if (inCode) {
+            matchedString = escapeHTML(matchedString);
+        }
 
         inCode = toggleInCodeState(tokenType, inCode);
         inURL = toggleInURLState(tokenType, inURL);
