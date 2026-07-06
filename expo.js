@@ -5,7 +5,6 @@
  */
 
 import { render } from "./compiler/renderer.js";
-import { tokenize } from "./compiler/lexer.js"
 
 function isInBrowser() {
     return typeof window !== "undefined";
@@ -29,46 +28,50 @@ function injectSolutionButtons() {
 }
 
 async function handleInput() {
-    if (isInBrowser()) {
-        let rendererTag = document.getElementById("renderer");
+    try {
+        if (isInBrowser()) {
+            let rendererTag = document.getElementById("renderer");
 
-        let markdownFile = rendererTag.dataset.src;
+            let markdownFile = rendererTag.dataset.src;
 
-        fetch(markdownFile)
-            .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
-            .then((markdownContents) => {
-                console.log(tokenize(markdownContents))
-                rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
-                injectSolutionButtons();
-                MathJax.typesetPromise([rendererTag]);  // render any LaTeX
+            fetch(markdownFile)
+                .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
+                .then((markdownContents) => {
+                    rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
+                    injectSolutionButtons();
+                    MathJax.typesetPromise([rendererTag]);  // render any LaTeX
 
-                document.querySelectorAll("pre code").forEach(block => {
-                    console.log(JSON.stringify(block.textContent));
+                    document.querySelectorAll("pre code").forEach(block => {
+                        console.log(JSON.stringify(block.textContent));
+                    });
+                    // hljs.highlightAll();
+                    console.log(rendererTag.innerHTML);
                 });
-                // hljs.highlightAll();
-                console.log(rendererTag.innerHTML);
-            });
 
-        console.log(`RENDERED HTML:`);
-        console.log(rendererTag);
-    }
-    else {
-        const fs = await import("fs");
-
-        let inputFile = process.argv[2];
-
-        if (inputFile == undefined) {
-            console.error("Correct syntax is: node expo.js [markdown file]");
-            process.exit(1);
+            console.log(`RENDERED HTML:`);
+            console.log(rendererTag);
         }
+        else {
+            const fs = await import("fs");
 
-        let markdownContents = fs.readFileSync(inputFile, "utf8");
-        let renderedHTML = render(markdownContents);
-        console.log("Compiled Markdown to HTML...");
+            let inputFile = process.argv[2];
 
-        let outputFile = inputFile.replace(".md", ".html");
-        fs.writeFileSync(outputFile, renderedHTML);
-        console.log(`Wrote to ${outputFile}!`);
+            if (inputFile == undefined) {
+                console.error("Correct syntax is: node expo.js [markdown file]");
+                process.exit(1);
+            }
+
+            let markdownContents = fs.readFileSync(inputFile, "utf8");
+            let renderedHTML = render(markdownContents);
+            console.log("Compiled Markdown to HTML...");
+
+            let outputFile = inputFile.replace(".md", ".html");
+            fs.writeFileSync(outputFile, renderedHTML);
+            console.log(`Wrote to ${outputFile}!`);
+        }
+    }
+    catch (error) {
+        console.error("An error occurred: ", error.message);
     }
 }
 

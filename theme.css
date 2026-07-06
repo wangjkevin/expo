@@ -18,6 +18,11 @@
     width: 100%;  /* prevents expansion/resizing issues */
     padding: 72pt;
     margin: 0 auto; /* centers the page */
+
+    /* give the top and bottom of the page some breathing room */
+    margin-top: 72pt;
+    margin-bottom: 72pt;
+
     font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", sans-serif;
     font-size: 11pt;  /* by default */
     padding-top: 0pt;
@@ -31,7 +36,7 @@
     margin: 0;
 
     /* add some big padding on the top, this is okay since we only ever use h1's for the title */
-    padding-top: 72pt;
+    /* padding-top: 72pt; */
 }
 
 #generated-code h2 {

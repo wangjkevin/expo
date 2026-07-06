@@ -10,6 +10,8 @@ Hi scholars! As we near the final, I wanted to give you all more opportunities t
 
 <div class="checkpoint">_**Checkpoint:** These problems are quite challenging! <span style="font-size: 8pt;">Consider tackling these problems after finishing and thoroughly understanding the provided practice tests!_</span></div>
 
+
+
 ## Backtracking: Solving _Connections!_
 
 You've probably heard of it: the notorious [Connections](https://www.google.com/url?q=https://www.nytimes.com/games/connections/&sa=D&source=editors&ust=1773223570887454&usg=AOvVaw0_6U8AoLRAzmDed6CYz0UP) puzzle, infamously crafted by puzzle creator [Wyna Liu](https://www.google.com/url?q=https://www.wynaliu.com/about&sa=D&source=editors&ust=1773223570887617&usg=AOvVaw2xsPg0-ogXL968MUoY0pSv) and released daily by the New York Times. In Connections, your goal is to form four groups of four items each, where each group shares something in common. There's always exactly one solution for each puzzle, and each group is more difficult than the previous. If you haven't played this game before, try solving today's puzzle! Chances are it's not that easy. This experience of frustration will form the backbone of this problem. >:-)
@@ -25,11 +27,6 @@ And here's the solution:
 In this problem, you'll be writing the following function:
 
 ```
-
-
-
-
-
 bool solvePuzzle(Set<string> words, Set<Set<string>> &categories);
 ```
 
@@ -95,6 +92,8 @@ bool solvePuzzle(Set<string> words, Set<Set<string>> &categories) {
 }
 ```
 </div>
+
+
 
 ## Linked Lists and Exploding Kittens!
 
@@ -195,6 +194,8 @@ Card* diffuse(Card* &deck) {
 ```
 </div>
 
+
+
 ## Champion of Memory Diagrams: Minecraft Championship
 
 There's a really popular, monthly Minecraft tournament, hosted by [Noxcrew](noxcrew.com/mcc) and [Scott Smajor](youtube.com/dangthatsalongname), called [Minecraft Championship](mcc.live), where 40 beloved Minecraft content creators are split into 10 teams of four to compete for the crown. They compete across a variety of minigames: the infamous [Parkour Warrior](https://www.youtube.com/watch?v=Rx_L1SbZ14k), the intense [Meltdown](https://www.youtube.com/watch?v=SbOrZFyKt2k), and the classic [Bingo But Fast](https://www.youtube.com/watch?v=IcuWBsYF9C4).
@@ -227,7 +228,11 @@ bool* ptr = &(games[2].isPlayed);
 delete[] games;
 ```
 
+<div class="solution">
 <img src="https://stanford.edu/~kevjwang/cs106b/finale/images/image3.png" width="610" height="373">
+</div>
+
+
 
 ## Binary Space Partioning in _Doom_
 
@@ -283,6 +288,7 @@ This would mean that if a player were planning on traveling straight to the Seco
 
 💡 Hint: Consider BFS!   On which assignment did you code up BFS from scratch?
 
+<div class="solution">
 ```
 Vector<string> convertToNames(Vector<BSPNode*> path) {
     Vector<string> rooms = {};
@@ -341,3 +347,4 @@ Vector<string> findShortestPathTo(string room, BSPNode* root) {
     return {};
 }
 ```
+</div>
