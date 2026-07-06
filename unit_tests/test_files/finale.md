@@ -4,6 +4,8 @@
 kevjwang@stanford.edu
 </div>
 
+\(\text{some math } x \cdot 2\) test test test
+
 Hi scholars! As we near the final, I wanted to give you all more opportunities to practice your CS106B skillz! At its heart, computer science can be described as the study of games. Hence, these problems are all game-themed! I hope you enjoy, and I hope you'll try out one of these games--perhaps now, or after the final!
 
 <div class="checkpoint">_**Checkpoint:** These problems are quite challenging! <span style="font-size: 8pt;">Consider tackling these problems after finishing and thoroughly understanding the provided practice tests!_</span></div>
@@ -23,6 +25,11 @@ And here's the solution:
 In this problem, you'll be writing the following function:
 
 ```
+
+
+
+
+
 bool solvePuzzle(Set<string> words, Set<Set<string>> &categories);
 ```
 
@@ -34,6 +41,7 @@ bool wynaApproved(Set<Set<string>> categories);
 
 returns `true`.
 
+<div class="solution">
 ```
 const int NUM_WORDS_PER_GROUP = 4;
 
@@ -86,6 +94,7 @@ bool solvePuzzle(Set<string> words, Set<Set<string>> &categories) {
     return false;
 }
 ```
+</div>
 
 ## Linked Lists and Exploding Kittens!
 
@@ -115,6 +124,7 @@ Don't create or destroy any new nodes in this problem. Simply rewire and transfe
 
 Have fun with this problem! Rewire with grace, and you'll successfully diffuse all the exploding kittens from the deck. :-)
 
+<div class="solution">
 ```
 Card* remove(Card* &deck, Card* prev, Card* curr) {
     Card* next = curr->next;
@@ -183,6 +193,7 @@ Card* diffuse(Card* &deck) {
     return kittens;
 }
 ```
+</div>
 
 ## Champion of Memory Diagrams: Minecraft Championship
 
@@ -254,13 +265,16 @@ Vector<string> findShortestPathTo(string room, BSPNode* root);
 
 
 Your goal is to find the shortest path to the room specified. For example, if `room` was `"Kitchen"`, the shortest path would be:
+
 ```
 {"Lobby", "Diner", "Kitchen"}
 ```
+
 since we start at the Lobby, and can choose to go to the Diner, and then end up at the Kitchen.
 
 
 As another example, if room was `"Second Floor"`, we should `return`:
+
 ```
 {"Lobby", "Elevator", "Second Floor"}
 ```

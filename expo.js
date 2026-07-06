@@ -5,6 +5,7 @@
  */
 
 import { render } from "./compiler/renderer.js";
+import { tokenize } from "./compiler/lexer.js"
 
 function isInBrowser() {
     return typeof window !== "undefined";
@@ -14,18 +15,38 @@ function stylize(cssFile) {
     return `<link rel="stylesheet" href="${cssFile}">`;
 }
 
+function injectSolutionButtons() {
+    let solutionDivs = document.querySelectorAll("div.solution");
+
+    for (let solutionDiv of solutionDivs) {
+        let solutionButton = document.createElement("button");
+        solutionButton.className = "clicky portal";
+        solutionButton.textContent = "Solution";
+        solutionButton.onclick = () => { solutionDiv.classList.toggle("open"); };
+
+        solutionDiv.parentNode.insertBefore(solutionButton, solutionDiv);
+    }
+}
+
 async function handleInput() {
     if (isInBrowser()) {
         let rendererTag = document.getElementById("renderer");
-        rendererTag.innerHTML = stylize("theme.css");
 
         let markdownFile = rendererTag.dataset.src;
 
         fetch(markdownFile)
             .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
             .then((markdownContents) => {
-                rendererTag.innerHTML += render(markdownContents);
+                console.log(tokenize(markdownContents))
+                rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
+                injectSolutionButtons();
                 MathJax.typesetPromise([rendererTag]);  // render any LaTeX
+
+                document.querySelectorAll("pre code").forEach(block => {
+                    console.log(JSON.stringify(block.textContent));
+                });
+                // hljs.highlightAll();
+                console.log(rendererTag.innerHTML);
             });
 
         console.log(`RENDERED HTML:`);

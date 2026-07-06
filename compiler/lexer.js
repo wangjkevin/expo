@@ -395,21 +395,23 @@ function extinguishNewlineTokens(tokens) {
         return [];
     }
 
-    let newTokens = [tokens[0]];
-    tokens = tokens.slice(1);
+    let newTokens = [];
 
-    while (tokens.length > 0) {
-        let tokenToExamine = tokens[0];
+    for (let i = 0; i < tokens.length; i++) {
+        let tokenToExamine = tokens[i];
 
-        let tokenBefore = newTokens[newTokens.length - 1];
+        let tokenBefore = tokens[i - 1];
 
-        if (!(tokenToExamine.type == TOKEN_TYPES.NEWLINE_MARKER && (
-            tokenBefore.type == TOKEN_TYPES.BLOCK_CODE_START || tokens[1].type == TOKEN_TYPES.BLOCK_CODE_END
-        ))) {
-            newTokens.push(tokenToExamine);
+        let isNewlineSymbolAfterCodeStart = tokenBefore?.type == TOKEN_TYPES.BLOCK_CODE_START 
+                                            && tokenToExamine.type == TOKEN_TYPES.NEWLINE_MARKER;
+        let isNewlineSymbolAfterCodeEnd   = tokenBefore?.type == TOKEN_TYPES.BLOCK_CODE_END 
+                                            && tokenToExamine.type == TOKEN_TYPES.NEWLINE_MARKER;
+                                            
+        if (isNewlineSymbolAfterCodeStart || isNewlineSymbolAfterCodeEnd) {
+            continue;  // extinguish the newline symbol!
         }
 
-        tokens = tokens.slice(1);
+        newTokens.push(tokenToExamine);
     }
 
     return newTokens;
