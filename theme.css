@@ -142,8 +142,6 @@
 
 /******************** CODE HIGHLIGHTING! ********************/
 
-/* .hljs-comment, .hljs-quote { color: #5c6370; font-style: italic; }
-
-.hljs-pointer { color: #ff00ff; }
-
-.hljs-nullptr { color: red; font-style: italic; } */
+.token.pointer {
+    color: hotpink;
+}

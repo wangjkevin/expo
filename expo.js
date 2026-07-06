@@ -6,6 +6,12 @@
 
 import { render } from "./compiler/renderer.js";
 
+Prism.languages.insertBefore("cpp", "keyword", {
+    "pointer": {
+        pattern: /\b(?:\w+::)*\w+(?:<(?:[^<>]|<[^<>]*>)*>)?\*+/g
+    }
+});
+
 function isInBrowser() {
     return typeof window !== "undefined";
 }
@@ -19,6 +25,8 @@ function injectSolutionButtons() {
 
     for (let solutionDiv of solutionDivs) {
         let solutionButton = document.createElement("button");
+
+        // fill in attributes
         solutionButton.className = "clicky portal";
         solutionButton.textContent = "Solution";
         solutionButton.onclick = () => { solutionDiv.classList.toggle("open"); };
@@ -37,15 +45,17 @@ async function handleInput() {
             fetch(markdownFile)
                 .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
                 .then((markdownContents) => {
+                    // STEP 1: populate renderer tag with styles + actual html
                     rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
-                    injectSolutionButtons();
-                    MathJax.typesetPromise([rendererTag]);  // render any LaTeX
 
-                    document.querySelectorAll("pre code").forEach(block => {
-                        console.log(JSON.stringify(block.textContent));
-                    });
-                    // hljs.highlightAll();
-                    console.log(rendererTag.innerHTML);
+                    // STEP 2: inject solution buttons
+                    injectSolutionButtons();
+
+                    // STEP 3: typeset any math :-)
+                    MathJax.typesetPromise([rendererTag]);
+
+                    // STEP 4: highlight any code blocks!
+                    Prism.highlightAllUnder(rendererTag);
                 });
 
             console.log(`RENDERED HTML:`);
@@ -55,10 +65,8 @@ async function handleInput() {
             const fs = await import("fs");
 
             let inputFile = process.argv[2];
-
             if (inputFile == undefined) {
-                console.error("Correct syntax is: node expo.js [markdown file]");
-                process.exit(1);
+                throw new Error("Correct syntax is: node expo.js [markdown file]");
             }
 
             let markdownContents = fs.readFileSync(inputFile, "utf8");
@@ -71,7 +79,7 @@ async function handleInput() {
         }
     }
     catch (error) {
-        console.error("An error occurred: ", error.message);
+        console.error("An error occurred: \n", error.message);
     }
 }
 
