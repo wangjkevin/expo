@@ -108,7 +108,7 @@ We'll represent the deck of cards as a singly-linked list. The struct for each e
 
 ```
 struct Card {
-    bool isExplodingKitten;
+    bool isExplodingKitten; 
     Card* next;
 };
 ```

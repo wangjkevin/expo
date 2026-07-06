@@ -231,6 +231,11 @@ function findToken(string, tokens, inCode, inURL) {
         // escape out any HTML characters that may be sucked into an HTML tag...
         if (inCode) {
             matchedString = escapeHTML(matchedString);
+
+            // newline characters shouldn't be converted to <br> at the very end
+            if (tokenType == TOKEN_TYPES.NEWLINE_MARKER && tokens[tokens.length - 1].type != TOKEN_TYPES.BLOCK_CODE_START) {
+                tokenType = TOKEN_TYPES.TEXT;
+            }
         }
 
         // if we've reached this point, we've found a match 

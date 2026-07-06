@@ -22,6 +22,8 @@ export function render(markdownString) {
     // STEP 3: turn this intermediate represntation into HTML!!
     let htmlString = generate(tree.root);
 
+    console.log(JSON.stringify(htmlString));
+
     // the fruits of our labor...
     return htmlString;
 }

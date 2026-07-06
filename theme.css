@@ -142,6 +142,6 @@
 
 /******************** CODE HIGHLIGHTING! ********************/
 
-.token.pointer {
+#generated-code .token.pointer {
     color: hotpink;
 }
