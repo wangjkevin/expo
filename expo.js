@@ -50,7 +50,7 @@ async function handleInput() {
 
             fetch(markdownFile)
                 .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
-                .then((markdownContents) => {
+                .then(async (markdownContents) => {
                     // STEP 1: populate renderer tag with styles + actual html
                     rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
 
@@ -58,7 +58,7 @@ async function handleInput() {
                     injectSolutionButtons();
 
                     // STEP 3: typeset any math :-)
-                    MathJax.typesetPromise([rendererTag]);
+                    await MathJax.typesetPromise([rendererTag]);
 
                     // STEP 4: highlight any code blocks!
                     Prism.highlightAllUnder(rendererTag);
