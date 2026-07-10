@@ -7,9 +7,15 @@
 import { render } from "./compiler/renderer.js";
 
 Prism.languages.insertBefore("cpp", "keyword", {
+    "primitive-type": {
+        pattern: /\b(string|char|int|long|double|float)\b/
+    },
     "pointer": {
         pattern: /\b(?:\w+::)*\w+(?:<(?:[^<>]|<[^<>]*>)*>)?\*+/g
-    }
+    },
+    "object-type": {
+        pattern: /\b(?:Vector|GridLocationRange|GridLocation|Grid|Stack|PriorityQueue|Queue|HashMap|Map|HashSet|Set|Lexicon)\b|(?<=\b(?:struct|class|enum|new)\s+)[A-Z]\w*|^[A-Z]\w*/gm
+    },
 });
 
 function isInBrowser() {
@@ -46,7 +52,6 @@ async function handleInput() {
                 .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
                 .then((markdownContents) => {
                     // STEP 1: populate renderer tag with styles + actual html
-                    console.log(markdownContents);
                     rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
 
                     // STEP 2: inject solution buttons

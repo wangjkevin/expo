@@ -143,5 +143,30 @@
 /******************** CODE HIGHLIGHTING! ********************/
 
 #generated-code .token.pointer {
-    color: hotpink;
+    color: #ff00ff;
+}
+
+#generated-code .token.keyword {
+    color: #9900ff;
+}
+
+#generated-code .token.primitive-type {
+    color: #ff9900;
+}
+
+#generated-code .token.object-type {
+    color: #bf9000;
+}
+
+#generated-code .token.class-name {
+    color: #bf9000;
+}
+
+#generated-code .token.function {
+    color: #2e2efc;
+}
+
+#generated-code .token.comment {
+    font-style: italic;
+    color: #999999;
 }
