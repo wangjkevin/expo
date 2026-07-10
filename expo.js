@@ -46,13 +46,11 @@ async function handleInput() {
         if (isInBrowser()) {
             let rendererTag = document.getElementById("renderer");
 
-            let markdownFile = rendererTag.dataset.src;
-
-            fetch(markdownFile)
+            fetch(rendererTag.dataset.md)
                 .then((response) => { return response.text() })  // reads the Response and returns a Promise, which is why we need another .then
                 .then(async (markdownContents) => {
                     // STEP 1: populate renderer tag with styles + actual html
-                    rendererTag.innerHTML += stylize("theme.css") + render(markdownContents);
+                    rendererTag.innerHTML += stylize(rendererTag.dataset.css) + render(markdownContents);
 
                     // STEP 2: inject solution buttons
                     injectSolutionButtons();

@@ -170,3 +170,7 @@
     font-style: italic;
     color: #999999;
 }
+
+#generated-code .token.string {
+    color: #486e3c;
+}
