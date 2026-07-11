@@ -6,6 +6,7 @@ Creates an HTML file that links a Markdown file with the needed libraries and sc
 """
 
 import argparse
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False)
@@ -31,7 +32,8 @@ def main():
             f"<script src='https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js'></script>\n"
             f"<script src='https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js'></script>\n"
             f"\n"
-            f"<script type='module' src='https://web.stanford.edu/~kevjwang/expo/expo.js'></script>\n"
+            # thank you, [[ http://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory ]] !
+            f"<script type='module' src={os.path.dirname(os.path.abspath(__file__))}></script>\n"
         )
 
 if __name__ == "__main__":
