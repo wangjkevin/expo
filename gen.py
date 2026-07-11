@@ -31,7 +31,7 @@ def main():
             f"<script src='https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js'></script>\n"
             f"<script src='https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js'></script>\n"
             f"\n"
-            f"<script type='module' src='expo.js'></script>\n"
+            f"<script type='module' src='https://www.stanford.edu/~kevjwang/expo/expo.js'></script>\n"
         )
 
 if __name__ == "__main__":
