@@ -23,15 +23,17 @@ def main():
     # myth, as ".ir" points to ".ir.stanford.edu"
     dir_of_this_script = os.path.dirname(os.path.realpath(__file__))
 
+    path_of_theme = os.path.join(dir_of_this_script, args.css_file)
     path_of_expo_entrypoint = os.path.join(dir_of_this_script, "expo.js")
 
     dir_of_html_file = os.path.dirname(os.path.realpath(args.html_file))
 
+    relative_path_to_theming = os.path.relpath(path_of_theme, start=dir_of_html_file)
     relative_path_to_expo_entrypoint = os.path.relpath(path_of_expo_entrypoint, start=dir_of_html_file)
 
     with open(args.html_file, "w") as f:
         f.write(
-            f"<span id='renderer' data-md='{args.markdown_file}' data-css='{args.css_file}'></span>\n"
+            f"<span id='renderer' data-md='{args.markdown_file}' data-css='{relative_path_to_theming}'></span>\n"
             f"\n"
             f"<!-- LaTeX typesetting support! -->\n"
             f"<script id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js'></script>\n"
