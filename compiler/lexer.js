@@ -127,6 +127,12 @@ function discernTextTokenType(inCode, inURL, tokens, tokenType) {
         return TOKEN_TYPES.TEXT;
     }
 
+    //   (5) blockquote markers are only valid if we're at the start of a new line
+    if (tokenType == TOKEN_TYPES.BLOCKQUOTE_MARKER 
+        && (tokens.length > 0 && tokens[tokens.length - 1].type != TOKEN_TYPES.NEWLINE_MARKER)) {
+        return TOKEN_TYPES.TEXT;
+    }
+
     // otherwise, we return null since there's nothing to convert
     return null;
 }
