@@ -212,6 +212,16 @@ function escapeHTML(text) {
 // note: we need the argument inCode in order to discern the correct token type,
 // as some tokens need some extra parsing before appending it to tokens
 function findToken(string, tokens, inCode, inURL) {
+    if (!inCode && !inURL) {
+        let htmlMatches = string.match(/^<\/?[a-zA-Z][^<>]*>/);
+        if (htmlMatches != null) {
+            let matchedString = htmlMatches[0];
+            let remainingString = string.slice(matchedString.length);
+
+            return [new Token(TOKEN_TYPES.TEXT, matchedString), remainingString, inCode, inURL];
+        }
+    }
+
     // note: you can't loop over TOKEN_TYPES directly, which is why you have to cast it
     // to an array using Object.entries
     for (let [typeName, typeInfo] of Object.entries(TOKEN_TYPES)) {
