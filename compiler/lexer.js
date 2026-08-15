@@ -213,7 +213,7 @@ function escapeHTML(text) {
 // as some tokens need some extra parsing before appending it to tokens
 function findToken(string, tokens, inCode, inURL) {
     if (!inCode && !inURL) {
-        let htmlMatches = string.match(/^<\/?[a-zA-Z][^<>]*>/);
+        let htmlMatches = string.match(/^<\/?[a-zA-Z][^<>]*>(?:(?=\r?\n\r?\n)\r?\n)?/);
         if (htmlMatches != null) {
             let matchedString = htmlMatches[0];
             let remainingString = string.slice(matchedString.length);
