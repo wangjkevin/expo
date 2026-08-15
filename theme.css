@@ -12,6 +12,14 @@
 
 /******************** STYLES APPLIED TO TAGS -- CHANGE AS NEEDED ********************/
 
+* {
+    cursor: url("https://web.stanford.edu/~kevjwang/cs106b/images/non-photo-blue-cursor-20px.png"), auto;
+}
+
+::selection {
+    background-color: #FFEE8C;
+}
+
 /* the main body of our handout -- what kinds of styles do we want to apply to the handout overall? */
 #generated-code {
     max-width: 468pt;
@@ -27,7 +35,7 @@
     font-size: 11pt;  /* by default */
     padding-top: 0pt;
     padding-bottom: 0pt;
-    line-height: 1.15;
+    line-height: 1.5;
 }
 
 #generated-code h1 {
@@ -83,6 +91,18 @@
     text-align: right;
     font-size: 10pt;
     color: #7F7F7F;
+}
+
+/* for google slides embedded content */
+.slides {
+    aspect-ratio: 4 / 3;
+}
+
+.slides iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: white;
 }
 
 /**** used for text and text only ****/
