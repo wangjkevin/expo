@@ -42,9 +42,6 @@
     font-size: 19pt;
     text-align: center;
     margin: 0;
-
-    /* add some big padding on the top, this is okay since we only ever use h1's for the title */
-    /* padding-top: 72pt; */
 }
 
 #generated-code h2 {
@@ -56,6 +53,13 @@
 #generated-code h3 {
     font-size: 12pt;
     text-align: center;
+    margin: 0;
+}
+
+#generated-code h4 {
+    font-size: 12pt;
+    text-align: center;
+    margin: 0;
 }
 
 #generated-code img {
@@ -65,12 +69,48 @@
     margin: auto;
 }
 
+#generated-code code {
+    background-color: #F2F2FF;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    font-family: "Roboto Mono";
+    font-size: 10.25pt;
+}
+
 #generated-code pre {
     padding: 6.667pt;
-    text-wrap: wrap;
+    overflow-x: auto;
     background-color: rgb(230, 230, 250);
     margin-top: 0;
     margin-bottom: 0;
+}
+
+#generated-code pre code {
+    /* reset the effects of inline code styling */
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+#generated-code h1 code,
+#generated-code h2 code,
+#generated-code h3 code,
+#generated-code h4 code {
+    font-size: inherit;
+}
+
+/* for printing purposes only */
+@media print {
+    #generated-code :has(> iframe)::before {
+        content: "Pssst...this is a printed version of the handout, so iframes (aka embedded content, like the one below) may not load properly.";
+        display: block;
+        text-align: center;
+        font-family: "Comic Sans MS", "Comic Sans", "Comic Neue", sans-serif;
+        font-size: 9pt;
+        font-style: italic;
+        color: #7F7F7F;
+        margin-bottom: 6pt;
+    }
 }
 
 /******************** CUSTOM CLASSES SPECIFIC TO HANDOUTS ********************/
