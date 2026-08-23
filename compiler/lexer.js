@@ -115,11 +115,18 @@ function discernTextTokenType(inCode, inURL, tokens, tokenType) {
     }
 
     //   (3) the token type thinks it's the end of a link URL, but there is no
-    //       link opener, i.e. (, before it in our array of Tokens
-    if (tokenType == TOKEN_TYPES.LINK_URL_END 
-        && findMostRecentTokenType(tokens, [TOKEN_TYPES.LINK_URL_START, TOKEN_TYPES.IMAGE_URL_START]) == null
-    ) {
-        return TOKEN_TYPES.TEXT;
+    //       _valid_ link opener, i.e. (, before it in our array of Tokens -- 
+    //      by _valid_ link opener, we mean a opening token that has not yet been
+    //      closed off by a closing token
+    if (tokenType == TOKEN_TYPES.LINK_URL_END) {
+        let mostRecentToken = findMostRecentTokenType(tokens, [
+            TOKEN_TYPES.LINK_URL_START, TOKEN_TYPES.LINK_URL_END, 
+            TOKEN_TYPES.IMAGE_URL_START, TOKEN_TYPES.IMAGE_URL_END
+        ]);
+
+        if (mostRecentToken != TOKEN_TYPES.LINK_URL_START && mostRecentToken != TOKEN_TYPES.IMAGE_URL_START) {
+            return TOKEN_TYPES.TEXT;
+        }
     }
 
     //   (4) if we're inside a URL, we should always convert the token to a text token
