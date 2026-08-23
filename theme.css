@@ -90,6 +90,8 @@
     background-color: transparent;
     padding: 0;
     border-radius: 0;
+    font-size: 10.25pt;
+    line-height: 1.3;
 }
 
 #generated-code h1 code,
@@ -125,6 +127,12 @@
     padding: 14.4pt;
     background-color: rgb(227, 244, 250);
     font-size: 9pt;
+}
+
+.aside {
+    padding: 14.4pt;
+    margin: 10pt;
+    background-color: #eaf4ff;
 }
 
 .byline {
@@ -195,28 +203,27 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease;
+    background-color: #EBFADB;
+    border-radius: 20px;
+    padding: 0 14pt;
+}
+
+/* this is to have some breathing room at the end of the solution div */
+/* full disclosure: this is a bit of a hack */
+.solution::after {
+    content: "";
+    display: block;
+    height: 14pt;
 }
 
 .solution.open {
-    max-height: 5000px;  /* this should be big enough :-P */
+    max-height: 5000px;  /* this _should_ be big enough :-P */
 }
 
 /******************** CODE HIGHLIGHTING! ********************/
 
-#generated-code .token.pointer {
-    color: #ff00ff;
-}
-
 #generated-code .token.keyword {
     color: #9900ff;
-}
-
-#generated-code .token.primitive-type {
-    color: #ff9900;
-}
-
-#generated-code .token.object-type {
-    color: #bf9000;
 }
 
 #generated-code .token.class-name {
@@ -234,4 +241,22 @@
 
 #generated-code .token.string {
     color: #486e3c;
+}
+
+/* custom highlights below */
+
+#generated-code .token.primitive-type {
+    color: #ff9900;
+}
+
+#generated-code .token.pointer {
+    color: #ff00ff;
+}
+
+#generated-code .token.object-type {
+    color: #bf9000;
+}
+
+#generated-code .token.nullptr {
+    color: #ff0000;
 }

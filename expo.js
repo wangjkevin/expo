@@ -16,6 +16,9 @@ Prism.languages.insertBefore("cpp", "keyword", {
     "object-type": {
         pattern: /\b(?:Vector|GridLocationRange|GridLocation|Grid|Stack|PriorityQueue|Queue|HashMap|Map|HashSet|Set|Lexicon)\b|(?<=\b(?:struct|class|enum|new)\s+)[A-Z]\w*|^[A-Z]\w*/gm
     },
+    "nullptr": {
+        pattern: /\bnullptr\b/g
+    }
 });
 
 function isInBrowser() {
